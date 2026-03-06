@@ -1,0 +1,63 @@
+Table propietario {
+  id_propietario serial [pk, not null, unique]
+  tipo_propietario varchar(10) [not null, note: 'persona o empresa']
+  identificacion varchar(30) [not null, unique]
+  nombre varchar(120) [not null]
+  direccion varchar(200) [not null]
+}
+
+Table vehiculos {
+  id_vehiculo serial [pk, not null, unique]
+  placa varchar(10) [not null, unique]
+  marca varchar(60) [not null]
+  tipo_vehiculo varchar(20) [not null, note: 'automovil, moto o carro_pesado']
+  propietario_id integer [not null]
+}
+
+Table matricula {
+  id_matricula serial [pk, not null, unique]
+  vehiculo_id integer [not null]
+  fecha_matricula date [not null]
+}
+
+Table agentes_transito {
+  id_agente serial [pk, not null, unique]
+  identificacion varchar(30) [not null, unique]
+  nombre varchar(120) [not null]
+}
+
+Table camaras {
+  id_camara serial [pk, not null, unique]
+  codigo varchar(30) [not null, unique]
+  ubicacion varchar(200) [not null]
+}
+
+Table infracciones {
+  id_infraccion serial [pk, not null, unique]
+  vehiculo_id integer [not null]
+  fecha_infraccion date [not null]
+  descripcion varchar(255) [not null]
+  valor numeric [not null]
+  agente_id integer
+  camara_id integer
+}
+
+Ref fk_propietario_id_propietario_vehiculos {
+  propietario.id_propietario < vehiculos.propietario_id [delete: restrict, update: cascade]
+}
+
+Ref fk_vehiculos_id_vehiculo_matricula {
+  vehiculos.id_vehiculo < matricula.vehiculo_id [delete: cascade, update: no action]
+}
+
+Ref fk_vehiculos_id_vehiculo_infracciones {
+  vehiculos.id_vehiculo < infracciones.vehiculo_id [delete: cascade, update: no action]
+}
+
+Ref fk_agentes_transito_id_agente_infracciones {
+  agentes_transito.id_agente < infracciones.agente_id [delete: no action, update: no action]
+}
+
+Ref fk_camaras_id_camara_infracciones {
+  camaras.id_camara < infracciones.camara_id [delete: no action, update: no action]
+}
