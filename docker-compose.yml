@@ -4,11 +4,11 @@ services:
 
   db:
     image: postgres:15-alpine
-    container_name: db_transito
+    container_name: 
     environment:
-      POSTGRES_USER: admin_transito
-      POSTGRES_PASSWORD: password123
-      POSTGRES_DB: transito_db
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     ports:
       - "5432:5432"
     volumes:
@@ -24,9 +24,9 @@ services:
       - db
     environment:
       - DB_HOST=db
-      - DB_USER=admin_transito
-      - DB_PASSWORD=password123
-      - DB_NAME=transito_db
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
     volumes:
       - ./backend:/usr/src/app
       - /usr/src/app/node_modules
