@@ -17,6 +17,7 @@ services:
   app:
     build: ./backend
     container_name: app_transito
+    command: npm run dev
     ports:
       - "3000:3000"
     depends_on:
