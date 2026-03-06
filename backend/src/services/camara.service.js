@@ -65,7 +65,7 @@ const camaraService = {
 		return updated;
 	},
 
-	remove: async (id) => {
+	delete: async (id) => {
 		const camaraId = Number(id);
 		if (Number.isNaN(camaraId) || camaraId <= 0) {
 			throw buildError('ID de camara invalido', 400);

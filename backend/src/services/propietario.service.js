@@ -64,7 +64,7 @@ const propietarioService = {
 		return updated;
 	},
 
-	remove: async (id) => {
+	delete: async (id) => {
 		const propietarioId = Number(id);
 		if (Number.isNaN(propietarioId) || propietarioId <= 0) {
 			throw buildError('ID de propietario invalido', 400);

@@ -62,7 +62,7 @@ const agenteService = {
 		return updated;
 	},
 
-	remove: async (id) => {
+	delete: async (id) => {
 		const agenteId = Number(id);
 		if (Number.isNaN(agenteId) || agenteId <= 0) {
 			throw buildError('ID de agente invalido', 400);

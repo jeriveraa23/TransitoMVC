@@ -18,7 +18,6 @@ function validateOrigenInfraccion(agenteId, camaraId) {
     const hasAgente = agenteId !== undefined && agenteId !== null && String(agenteId).trim() !== '';
     const hasCamara = camaraId !== undefined && camaraId !== null && String(camaraId).trim() !== '';
 
-    // Debe venir exactamente uno: agente o camara.
     if ((hasAgente && hasCamara) || (!hasAgente && !hasCamara)) {
         throw buildError('La infraccion debe tener solo un origen: agente_id o camara_id', 400);
     }
@@ -40,7 +39,7 @@ const infraccionService = {
         return infraccionRepository.findAllDetailed();
     },
 
-    remove: async (id) => {
+    delete: async (id) => {
         const infraccionId = Number(id);
         if (Number.isNaN(infraccionId) || infraccionId <= 0) {
             throw buildError('ID de infraccion invalido', 400);

@@ -1,8 +1,7 @@
-// backend/src/repositories/agente.repository.js
 const { pool: db } = require('../config/database');
 
 const AgenteRepository = {
-    // Create a new agent
+
     create: async (data) => {
         const { identificacion, nombre } = data;
         const query = 'INSERT INTO agentes_transito (identificacion, nombre) VALUES ($1, $2) RETURNING *;';
@@ -10,7 +9,7 @@ const AgenteRepository = {
         return rows[0];
     },
 
-    // Update agent's name or identification
+   
     update: async (id, data) => {
         const { identificacion, nombre } = data;
         const query = `
@@ -23,8 +22,7 @@ const AgenteRepository = {
         return rows[0];
     },
 
-    // Delete an agent
-    // WARNING: Your DDL has "ON DELETE NO ACTION", so this will fail if the agent has existing infractions.
+ 
     delete: async (id) => {
         const query = 'DELETE FROM agentes_transito WHERE id_agente = $1 RETURNING *;';
         const { rows } = await db.query(query, [id]);

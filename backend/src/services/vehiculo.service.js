@@ -98,7 +98,7 @@ const vehiculoService = {
 		return updated;
 	},
 
-	remove: async (id) => {
+	delete: async (id) => {
 		const vehiculoId = Number(id);
 		if (Number.isNaN(vehiculoId) || vehiculoId <= 0) {
 			throw buildError('ID de vehiculo invalido', 400);
