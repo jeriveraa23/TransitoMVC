@@ -19,7 +19,11 @@ async function testConnection() {
   }
 }
 
+// Mantiene compatibilidad con repositorios que usan db.query(...)
+const query = (text, params) => pool.query(text, params);
+
 module.exports = {
   pool,
+  query,
   testConnection,
 };
