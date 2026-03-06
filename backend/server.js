@@ -2,8 +2,11 @@ require('dotenv').config();
 
 const express = require('express');
 const { testConnection, pool } = require('./src/config/database');
+const apiRoutes = require('./src/routes');
 
 const app = express();
+
+app.use(express.json());
 
 app.get('/', (req, res) => {
   res.send('<h1>Servidor de Transito Sabaneta corriendo</h1>');
@@ -25,6 +28,8 @@ app.get('/api/health', async (req, res) => {
     });
   }
 });
+
+app.use('/api', apiRoutes);
 
 const PORT = process.env.PORT || 3000;
 
