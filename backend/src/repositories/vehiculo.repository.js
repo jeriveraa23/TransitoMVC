@@ -1,5 +1,5 @@
 // backend/src/repositories/vehiculo.repository.js
-const db = require('../config/database'); // Importa tu conexión de Postgres
+const { pool: db } = require('../config/database');
 
 const VehiculoRepository = {
     // Crear un nuevo vehículo vinculándolo a un propietario existente
@@ -23,9 +23,11 @@ const VehiculoRepository = {
     },
 
     // Obtener todos los vehículos con el nombre de su dueño (JOIN)
-    findAllWithPropietario: async () => {
+    findAll: async () => {
         const query = `
-            SELECT v.*, p.nombre as nombre_propietario 
+            SELECT 
+            v.*, 
+            p.nombre as nombre_propietario 
             FROM vehiculos v
             JOIN propietario p ON v.propietario_id = p.id_propietario;
         `;

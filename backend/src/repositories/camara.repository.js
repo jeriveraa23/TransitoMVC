@@ -1,5 +1,5 @@
 // backend/src/repositories/camara.repository.js
-const db = require('../config/database');
+const { pool: db } = require('../config/database');
 
 const CamaraRepository = {
     // Register a new camera
@@ -39,7 +39,18 @@ const CamaraRepository = {
     findAll: async () => {
         const { rows } = await db.query('SELECT * FROM camaras;');
         return rows;
-    }
+    },
+
+    findByLocation: async (location) => {
+        const query = `
+            SELECT * FROM camaras 
+            WHERE ubicacion ILIKE $1 
+            ORDER BY codigo ASC;
+        `;
+        const values = [`%${location}%`];
+        const { rows } = await db.query(query, values);
+        return rows;
+    },
 };
 
 module.exports = CamaraRepository;

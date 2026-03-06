@@ -1,5 +1,5 @@
 // backend/src/repositories/propietario.repository.js
-const db = require('../config/database');
+const { pool: db } = require('../config/database');
 
 const PropietarioRepository = {
     // Create a new owner (Person or Company)
