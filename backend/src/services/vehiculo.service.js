@@ -55,8 +55,8 @@ const vehiculoService = {
 		});
 	},
 
-	findAllWithPropietario: async () => {
-		return vehiculoRepository.findAllWithPropietario();
+	findAll: async () => {
+		return vehiculoRepository.findAll();
 	},
 
 	findByPlaca: async (placa) => {
