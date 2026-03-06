@@ -12,7 +12,7 @@ const VehiculoController = {
 
     findAll: async (req, res) => {
         try {
-            const vehiculos = await vehiculoService.findAllWithPropietario();
+            const vehiculos = await vehiculoService.findAll();
             res.status(200).json(vehiculos);
         } catch (error) {
             res.status(error.statusCode || 500).json({ error: error.message });
