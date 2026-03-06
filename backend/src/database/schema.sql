@@ -1,5 +1,4 @@
 DROP TABLE IF EXISTS infracciones CASCADE;
-DROP TABLE IF EXISTS matricula CASCADE;
 DROP TABLE IF EXISTS vehiculos CASCADE;
 DROP TABLE IF EXISTS agentes_transito CASCADE;
 DROP TABLE IF EXISTS camaras CASCADE;
@@ -24,17 +23,6 @@ CREATE TABLE vehiculos (
 		REFERENCES propietario(id_propietario)
 		ON UPDATE CASCADE
 		ON DELETE RESTRICT
-);
-
-CREATE TABLE matricula (
-	id_matricula SERIAL PRIMARY KEY,
-	vehiculo_id INTEGER NOT NULL,
-	fecha_matricula DATE NOT NULL,
-	CONSTRAINT fk_vehiculos_id_vehiculo_matricula
-		FOREIGN KEY (vehiculo_id)
-		REFERENCES vehiculos(id_vehiculo)
-		ON UPDATE NO ACTION
-		ON DELETE CASCADE
 );
 
 CREATE TABLE agentes_transito (
@@ -80,6 +68,5 @@ CREATE TABLE infracciones (
 );
 
 CREATE INDEX idx_vehiculos_propietario_id ON vehiculos(propietario_id);
-CREATE INDEX idx_matricula_vehiculo_id ON matricula(vehiculo_id);
 CREATE INDEX idx_infracciones_vehiculo_id ON infracciones(vehiculo_id);
 CREATE INDEX idx_infracciones_fecha ON infracciones(fecha_infraccion);

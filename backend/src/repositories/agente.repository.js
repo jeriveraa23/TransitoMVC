@@ -1,5 +1,5 @@
 // backend/src/repositories/agente.repository.js
-const db = require('../config/database');
+const { pool: db } = require('../config/database');
 
 const AgenteRepository = {
     // Create a new agent

@@ -1,5 +1,5 @@
 // backend/src/repositories/infraccion.repository.js
-const db = require('../config/database');
+const { pool: db } = require('../config/database');
 
 const InfraccionRepository = {
     create: async (data) => {
@@ -17,10 +17,18 @@ const InfraccionRepository = {
     // Get all infractions with vehicle and owner details
     findAllDetailed: async () => {
         const query = `
-            SELECT i.*, v.placa, p.nombre as owner_name
-            FROM infracciones i
-            JOIN vehiculos v ON i.vehiculo_id = v.id_vehiculo
-            JOIN propietario p ON v.propietario_id = p.id_propietario;
+            SELECT
+                i.id_infraccion,
+                i.fecha_infraccion,
+                v.placa,
+                p.identificacion AS identificacion_propietario,
+                at.nombre AS nombre_agente,
+                c.codigo AS codigo_camara
+            FROM infraccciones i
+            LEFT JOIN vehiculos v ON i.vehiculo_id = v.id_vehiculo
+            LEFT JOIN propietario p ON v.propietario_id = p.id_propietario
+            LEFT JOIN agentes_transito at ON i.agente_id = at.id_agente
+            LEFT JOIN camaras c ON i.camara_id = c.id_camaras
         `;
         const { rows } = await db.query(query);
         return rows;
