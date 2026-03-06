@@ -1,0 +1,13 @@
+# Dependencias locales (las instala Docker adentro)
+node_modules
+npm-debug.log
+
+# Control de versiones
+.git
+.gitignore
+
+# Archivos de configuración local
+.env
+
+# Documentación innecesaria
+README.md
