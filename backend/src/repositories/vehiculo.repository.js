@@ -31,7 +31,29 @@ const VehiculoRepository = {
         `;
         const { rows } = await db.query(query);
         return rows;
+    },
+
+    update: async (id, datos) => {
+        const { marca, tipo_vehiculo, propietario_id } = datos;
+        const query = `
+            UPDATE vehiculos 
+            SET marca = $1, tipo_vehiculo = $2, propietario_id = $3
+            WHERE id_vehiculo = $4
+            RETURNING *;
+        `;
+        const values = [marca, tipo_vehiculo, propietario_id, id];
+        const { rows } = await db.query(query, values);
+        return rows[0]; // Retorna el vehículo actualizado
+    },
+
+    delete: async (id) => {
+        const query = 'DELETE FROM vehiculos WHERE id_vehiculo = $1 RETURNING *;';
+        const { rows } = await db.query(query, [id]);
+        return rows[0]; // Retorna el registro eliminado para confirmar
     }
+
+    
+
 };
 
 module.exports = VehiculoRepository;
