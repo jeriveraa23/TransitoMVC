@@ -1,11 +1,13 @@
 require('dotenv').config();
 
 const express = require('express');
+const cors = require('cors');
 const { testConnection, pool } = require('./src/config/database');
 const apiRoutes = require('./src/routes');
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 
 app.get('/', (req, res) => {
