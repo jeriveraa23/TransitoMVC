@@ -16,6 +16,7 @@ CREATE TABLE vehiculos (
 	id_vehiculo SERIAL PRIMARY KEY,
 	placa VARCHAR(10) NOT NULL UNIQUE,
 	marca VARCHAR(60) NOT NULL,
+	fecha_matricula DATE NOT NULL DEFAULT CURRENT_DATE,
 	tipo_vehiculo VARCHAR(20) NOT NULL CHECK (tipo_vehiculo IN ('automovil', 'moto', 'carro_pesado')),
 	propietario_id INTEGER NOT NULL,
 	CONSTRAINT fk_propietario_id_propietario_vehiculos

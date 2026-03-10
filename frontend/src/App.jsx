@@ -7,9 +7,11 @@ import AgentesPage from './pages/AgentesPage';
 import CamarasPage from './pages/CamarasPage';
 import InfraccionesPage from './pages/InfraccionesPage';
 import NotFound from './pages/NotFound';
+import ReportesPage from './pages/ReportesPage';
 import './App.css';
 
 function App() {
+
   return (
     <BrowserRouter>
       <Routes>
@@ -20,6 +22,7 @@ function App() {
           <Route path="agentes" element={<AgentesPage />} />
           <Route path="camaras" element={<CamarasPage />} />
           <Route path="infracciones" element={<InfraccionesPage />} />
+          <Route path="reportes" element={<ReportesPage />} />
           <Route path="home" element={<Navigate to="/" replace />} />
           <Route path="*" element={<NotFound />} />
         </Route>

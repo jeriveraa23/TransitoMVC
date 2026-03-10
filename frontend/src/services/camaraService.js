@@ -9,7 +9,12 @@ export const camaraService = {
     const { data } = await api.post('/camaras', payload);
     return data;
   },
-  remove: async (id) => {
-    await api.delete(`/camaras/${id}`);
+  update: async (id, payload) => {
+    const { data } = await api.put(`/camaras/${id}`, payload);
+    return data;
   },
+  delete: async (id) => {
+    const { data } = await api.delete(`/camaras/${id}`);
+    return data;
+  }
 };

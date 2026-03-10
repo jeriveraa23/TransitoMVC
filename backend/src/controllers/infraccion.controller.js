@@ -19,9 +19,18 @@ const InfraccionController = {
         }
     },
 
+    update: async (req, res) => {
+        try {
+            const updated = await infraccionService.update(req.params.id, req.body);
+            res.status(200).json(updated);
+        } catch (error) {
+            res.status(error.statusCode || 500).json({ error: error.message });
+        }
+    },
+
     delete: async (req, res) => {
         try {
-            await infraccionService.remove(req.params.id);
+            await infraccionService.delete(req.params.id); // Usando delete en lugar de remove
             res.status(204).send();
         } catch (error) {
             res.status(error.statusCode || 500).json({ error: error.message });

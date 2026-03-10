@@ -18,9 +18,8 @@ function validateOrigenInfraccion(agenteId, camaraId) {
     const hasAgente = agenteId !== undefined && agenteId !== null && String(agenteId).trim() !== '';
     const hasCamara = camaraId !== undefined && camaraId !== null && String(camaraId).trim() !== '';
 
-    // Debe venir exactamente uno: agente o camara.
     if ((hasAgente && hasCamara) || (!hasAgente && !hasCamara)) {
-        throw buildError('La infraccion debe tener solo un origen: agente_id o camara_id', 400);
+        throw buildError('La infraccion debe tener exactamente un origen: agente o camara', 400);
     }
 }
 
@@ -30,7 +29,7 @@ const infraccionService = {
         validateOrigenInfraccion(data.agente_id, data.camara_id);
 
         if (Number(data.valor) <= 0) {
-            throw buildError('El valor de la infraccion debe ser mayor a 0', 400);
+            throw buildError('El valor debe ser mayor a 0', 400);
         }
 
         return infraccionRepository.create(data);
@@ -40,21 +39,28 @@ const infraccionService = {
         return infraccionRepository.findAllDetailed();
     },
 
-    remove: async (id) => {
+    update: async (id, data) => {
         const infraccionId = Number(id);
-        if (Number.isNaN(infraccionId) || infraccionId <= 0) {
-            throw buildError('ID de infraccion invalido', 400);
-        }
+        if (Number.isNaN(infraccionId) || infraccionId <= 0) throw buildError('ID invalido', 400);
+
+        validateRequiredFields(data, ['vehiculo_id', 'fecha_infraccion', 'descripcion', 'valor']);
+        validateOrigenInfraccion(data.agente_id, data.camara_id);
+
+        const updated = await infraccionRepository.update(infraccionId, data);
+        if (!updated) throw buildError('Infraccion no encontrada', 404);
+
+        return updated;
+    },
+
+    delete: async (id) => {
+        const infraccionId = Number(id);
+        if (Number.isNaN(infraccionId) || infraccionId <= 0) throw buildError('ID invalido', 400);
 
         const deleted = await infraccionRepository.delete(infraccionId);
-        if (!deleted) {
-            throw buildError('Infraccion no encontrada', 404);
-        }
+        if (!deleted) throw buildError('Infraccion no encontrada', 404);
 
         return deleted;
     },
 };
 
 module.exports = infraccionService;
-
-

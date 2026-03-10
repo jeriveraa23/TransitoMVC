@@ -1,15 +1,19 @@
-import api from './api';
+import axios from 'axios';
+
+const API_URL = 'http://localhost:3000/api/infracciones';
 
 export const infraccionService = {
   list: async () => {
-    const { data } = await api.get('/infracciones');
-    return data;
+    const res = await axios.get(API_URL);
+    return res.data;
   },
-  create: async (payload) => {
-    const { data } = await api.post('/infracciones', payload);
-    return data;
+  create: async (data) => {
+    return await axios.post(API_URL, data);
   },
-  remove: async (id) => {
-    await api.delete(`/infracciones/${id}`);
+  update: async (id, data) => {
+    return await axios.put(`${API_URL}/${id}`, data);
   },
+  delete: async (id) => {
+    return await axios.delete(`${API_URL}/${id}`);
+  }
 };

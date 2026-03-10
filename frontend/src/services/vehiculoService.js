@@ -9,7 +9,12 @@ export const vehiculoService = {
     const { data } = await api.post('/vehiculos', payload);
     return data;
   },
-  remove: async (id) => {
-    await api.delete(`/vehiculos/${id}`);
+  update: async (id, payload) => {
+    const { data } = await api.put(`/vehiculos/${id}`, payload);
+    return data;
   },
+  delete: async (id) => {
+    const { data } = await api.delete(`/vehiculos/${id}`);
+    return data;
+  }
 };

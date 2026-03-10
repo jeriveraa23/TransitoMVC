@@ -1,88 +1,68 @@
 import { useEffect, useState } from 'react';
 import { agenteService } from '../services/agenteService';
+import FormAgente from '../components/agentes/formAgente';
+import TablaAgentes from '../components/agentes/tablaAgentes';
 
-const initialForm = {
-  identificacion: '',
-  nombre: '',
-};
+const AgentesPage = () => {
+  const [listaAgentes, setListaAgentes] = useState([]);
+  const [agenteAEditar, setAgenteAEditar] = useState(null);
 
-function AgentesPage() {
-  const [items, setItems] = useState([]);
-  const [form, setForm] = useState(initialForm);
-  const [error, setError] = useState('');
-
-  const loadData = async () => {
+  const cargarDatos = async () => {
     try {
-      setError('');
       const data = await agenteService.list();
-      setItems(data);
-    } catch (err) {
-      setError(err.response?.data?.error || 'No se pudo cargar agentes');
+      setListaAgentes(data);
+    } catch (error) {
+      console.error("Error al cargar agentes:", error);
     }
   };
+
+  const prepararEdicion = (agente) => setAgenteAEditar(agente);
+  const cancelarEdicion = () => setAgenteAEditar(null);
 
   useEffect(() => {
-    loadData();
+    cargarDatos();
   }, []);
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    try {
-      await agenteService.create(form);
-      setForm(initialForm);
-      await loadData();
-    } catch (err) {
-      setError(err.response?.data?.error || 'No se pudo crear agente');
-    }
-  };
-
-  const handleDelete = async (id) => {
-    try {
-      await agenteService.remove(id);
-      await loadData();
-    } catch (err) {
-      setError(err.response?.data?.error || 'No se pudo eliminar agente');
-    }
-  };
-
   return (
-    <section className="module-grid">
-      <div className="card">
-        <h2>Nuevo agente</h2>
-        <form onSubmit={handleSubmit} className="form-grid">
-          <input
-            placeholder="Identificacion"
-            value={form.identificacion}
-            onChange={(e) => setForm({ ...form, identificacion: e.target.value })}
-          />
-          <input
-            placeholder="Nombre"
-            value={form.nombre}
-            onChange={(e) => setForm({ ...form, nombre: e.target.value })}
-          />
-          <button type="submit">Guardar</button>
-        </form>
+    <div className="page-shell">
+      {/* Topbar Estandarizada con Badge de Ubicación */}
+      <div className="topbar">
+        <div>
+          <h1>Gestión de Agentes</h1>
+          <p>Registro de personal de tránsito municipal</p>
+        </div>
+        <span className="tag">Sabaneta - Movilidad</span>
       </div>
 
-      <div className="card">
-        <h2>Listado</h2>
-        {error && <p className="error-msg">{error}</p>}
-        <ul className="item-list">
-          {items.map((item) => (
-            <li key={item.id_agente}>
-              <div>
-                <strong>{item.nombre}</strong>
-                <span>{item.identificacion}</span>
-              </div>
-              <button type="button" onClick={() => handleDelete(item.id_agente)}>
-                Eliminar
-              </button>
-            </li>
-          ))}
-        </ul>
+      <div className="content-panel">
+        <div className="module-grid">
+          
+          {/* Formulario */}
+          <div className="card">
+            <h2 style={{ fontSize: '1.2rem', marginBottom: '1rem' }}>
+              {agenteAEditar ? 'Editar Agente' : 'Nuevo Registro'}
+            </h2>
+            <FormAgente 
+              onAgenteCreated={cargarDatos} 
+              datosEdicion={agenteAEditar} 
+              onCancel={cancelarEdicion} 
+            />
+          </div>
+
+          {/* Listado */}
+          <div className="card">
+            <h2 style={{ fontSize: '1.2rem', marginBottom: '1rem' }}>Listado de Agentes</h2>
+            <TablaAgentes 
+              listaAgentes={listaAgentes} 
+              onAgenteDeleted={cargarDatos} 
+              onEdit={prepararEdicion} 
+            />
+          </div>
+
+        </div>
       </div>
-    </section>
+    </div>
   );
-}
+};
 
 export default AgentesPage;

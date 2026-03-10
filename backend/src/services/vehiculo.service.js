@@ -37,7 +37,7 @@ async function validatePropietarioExists(propietarioId) {
 
 const vehiculoService = {
 	create: async (data) => {
-		validateRequiredFields(data, ['placa', 'marca', 'tipo_vehiculo', 'propietario_id']);
+		validateRequiredFields(data, ['placa', 'marca', 'fecha_matricula', 'tipo_vehiculo', 'propietario_id']);
 		validatePlaca(data.placa);
 		validateTipoVehiculo(data.tipo_vehiculo);
 
@@ -52,6 +52,7 @@ const vehiculoService = {
 			propietario_id: propietarioId,
 			placa: data.placa.trim().toUpperCase(),
 			marca: data.marca.trim(),
+			fecha_matricula: data.fecha_matricula
 		});
 	},
 
@@ -76,7 +77,7 @@ const vehiculoService = {
 			throw buildError('ID de vehiculo invalido', 400);
 		}
 
-		validateRequiredFields(data, ['marca', 'tipo_vehiculo', 'propietario_id']);
+		validateRequiredFields(data, ['marca', 'fecha_matricula', 'tipo_vehiculo', 'propietario_id']);
 		validateTipoVehiculo(data.tipo_vehiculo);
 
 		const propietarioId = Number(data.propietario_id);
@@ -87,6 +88,7 @@ const vehiculoService = {
 
 		const updated = await vehiculoRepository.update(vehiculoId, {
 			marca: data.marca.trim(),
+			fecha_matricula: data.fecha_matricula,
 			tipo_vehiculo: data.tipo_vehiculo,
 			propietario_id: propietarioId,
 		});

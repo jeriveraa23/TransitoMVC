@@ -9,7 +9,12 @@ export const agenteService = {
     const { data } = await api.post('/agentes', payload);
     return data;
   },
-  remove: async (id) => {
-    await api.delete(`/agentes/${id}`);
+  update: async (id, payload) => {
+    const { data } = await api.put(`/agentes/${id}`, payload);
+    return data;
   },
+  delete: async (id) => {
+    const { data } = await api.delete(`/agentes/${id}`);
+    return data;
+  }
 };

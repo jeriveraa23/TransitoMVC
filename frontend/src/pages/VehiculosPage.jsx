@@ -1,107 +1,75 @@
 import { useEffect, useState } from 'react';
 import { vehiculoService } from '../services/vehiculoService';
+import FormVehiculo from '../components/vehiculos/formVehiculo';
+import TablaVehiculos from '../components/vehiculos/tablaVehiculos';
 
-const initialForm = {
-  placa: '',
-  marca: '',
-  tipo_vehiculo: 'automovil',
-  propietario_id: '',
-};
+const VehiculosPage = () => {
+  const [listaVehiculos, setListaVehiculos] = useState([]);
+  const [vehiculoAEditar, setVehiculoAEditar] = useState(null);
 
-function VehiculosPage() {
-  const [items, setItems] = useState([]);
-  const [form, setForm] = useState(initialForm);
-  const [error, setError] = useState('');
-
-  const loadData = async () => {
+  // Función para traer los datos del backend
+  const cargarDatos = async () => {
     try {
-      setError('');
       const data = await vehiculoService.list();
-      setItems(data);
-    } catch (err) {
-      setError(err.response?.data?.error || 'No se pudo cargar vehiculos');
+      setListaVehiculos(data);
+    } catch (error) {
+      console.error("Error al cargar vehículos:", error);
     }
+  };
+
+  // Función puente para activar la edición
+  const prepararEdicion = (vehiculo) => {
+    setVehiculoAEditar(vehiculo);
+  };
+
+  const cancelarEdicion = () => {
+    setVehiculoAEditar(null);
   };
 
   useEffect(() => {
-    loadData();
+    cargarDatos();
   }, []);
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    try {
-      await vehiculoService.create({
-        ...form,
-        propietario_id: Number(form.propietario_id),
-      });
-      setForm(initialForm);
-      await loadData();
-    } catch (err) {
-      setError(err.response?.data?.error || 'No se pudo crear vehiculo');
-    }
-  };
-
-  const handleDelete = async (id) => {
-    try {
-      await vehiculoService.remove(id);
-      await loadData();
-    } catch (err) {
-      setError(err.response?.data?.error || 'No se pudo eliminar vehiculo');
-    }
-  };
-
   return (
-    <section className="module-grid">
-      <div className="card">
-        <h2>Nuevo vehiculo</h2>
-        <form onSubmit={handleSubmit} className="form-grid">
-          <input
-            placeholder="Placa"
-            value={form.placa}
-            onChange={(e) => setForm({ ...form, placa: e.target.value })}
-          />
-          <input
-            placeholder="Marca"
-            value={form.marca}
-            onChange={(e) => setForm({ ...form, marca: e.target.value })}
-          />
-          <select
-            value={form.tipo_vehiculo}
-            onChange={(e) => setForm({ ...form, tipo_vehiculo: e.target.value })}
-          >
-            <option value="automovil">automovil</option>
-            <option value="moto">moto</option>
-            <option value="carro_pesado">carro_pesado</option>
-          </select>
-          <input
-            type="number"
-            placeholder="ID propietario"
-            value={form.propietario_id}
-            onChange={(e) => setForm({ ...form, propietario_id: e.target.value })}
-          />
-          <button type="submit">Guardar</button>
-        </form>
+    <div className="page-shell">
+      {/* Topbar idéntica a Propietarios */}
+      <div className="topbar">
+        <div>
+          <h1>Gestión de Vehículos</h1>
+          <p>Control de parque automotor y vinculación de dueños</p>
+        </div>
+        <span className="tag">Sabaneta - Movilidad</span>
       </div>
 
-      <div className="card">
-        <h2>Listado</h2>
-        {error && <p className="error-msg">{error}</p>}
-        <ul className="item-list">
-          {items.map((item) => (
-            <li key={item.id_vehiculo}>
-              <div>
-                <strong>{item.placa}</strong>
-                <span>{item.marca} - {item.tipo_vehiculo} - Propietario: {item.nombre_propietario}</span>
-              </div>
-              <button type="button" onClick={() => handleDelete(item.id_vehiculo)}>
-                Eliminar
-              </button>
-            </li>
-          ))}
-        </ul>
+      <div className="content-panel">
+        <div className="module-grid">
+          
+          {/* Lado Izquierdo: Formulario */}
+          <div className="card">
+            <h2 style={{ fontSize: '1.2rem', marginBottom: '1rem' }}>
+              {vehiculoAEditar ? 'Editar Vehículo' : 'Nuevo Registro'}
+            </h2>
+            <FormVehiculo 
+              onVehiculoCreated={cargarDatos} 
+              datosEdicion={vehiculoAEditar}
+              onCancel={cancelarEdicion}
+            />
+          </div>
+
+          {/* Lado Derecho: Listado con Scroll */}
+          <div className="card">
+            <h2 style={{ fontSize: '1.2rem', marginBottom: '1rem' }}>Listado de Vehículos</h2>
+            <TablaVehiculos 
+              listaVehiculos={listaVehiculos} 
+              onVehiculoDeleted={cargarDatos}
+              onEdit={prepararEdicion}
+            />
+          </div>
+
+        </div>
       </div>
-    </section>
+    </div>
   );
-}
+};
 
 export default VehiculosPage;

@@ -9,7 +9,11 @@ export const propietarioService = {
     const { data } = await api.post('/propietarios', payload);
     return data;
   },
-  remove: async (id) => {
+  delete: async (id) => {
     await api.delete(`/propietarios/${id}`);
+  },
+  update: async (id, payload) => {
+    const { data } = await api.put(`/propietarios/${id}`, payload);
+    return data;
   },
 };

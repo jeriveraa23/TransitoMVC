@@ -4,13 +4,13 @@ const { pool: db } = require('../config/database');
 const VehiculoRepository = {
     // Crear un nuevo vehículo vinculándolo a un propietario existente
     create: async (datos) => {
-        const { placa, marca, tipo_vehiculo, propietario_id } = datos;
+        const { placa, marca, fecha_matricula, tipo_vehiculo, propietario_id } = datos;
         const query = `
-            INSERT INTO vehiculos (placa, marca, tipo_vehiculo, propietario_id)
-            VALUES ($1, $2, $3, $4)
+            INSERT INTO vehiculos (placa, marca, fecha_matricula, tipo_vehiculo, propietario_id)
+            VALUES ($1, $2, $3, $4, $5)
             RETURNING *;
         `;
-        const values = [placa, marca, tipo_vehiculo, propietario_id];
+        const values = [placa, marca, fecha_matricula, tipo_vehiculo, propietario_id];
         const { rows } = await db.query(query, values);
         return rows[0];
     },
@@ -36,14 +36,14 @@ const VehiculoRepository = {
     },
 
     update: async (id, datos) => {
-        const { marca, tipo_vehiculo, propietario_id } = datos;
+        const { marca, fecha_matricula, tipo_vehiculo, propietario_id } = datos;
         const query = `
             UPDATE vehiculos 
-            SET marca = $1, tipo_vehiculo = $2, propietario_id = $3
-            WHERE id_vehiculo = $4
+            SET marca = $1, fecha_matricula = $2, tipo_vehiculo = $3, propietario_id = $4
+            WHERE id_vehiculo = $5
             RETURNING *;
         `;
-        const values = [marca, tipo_vehiculo, propietario_id, id];
+        const values = [marca, fecha_matricula, tipo_vehiculo, propietario_id, id];
         const { rows } = await db.query(query, values);
         return rows[0]; // Retorna el vehículo actualizado
     },

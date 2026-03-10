@@ -1,88 +1,45 @@
 import { useEffect, useState } from 'react';
 import { camaraService } from '../services/camaraService';
+import FormCamara from '../components/camaras/formCamara';
+import TablaCamaras from '../components/camaras/tablaCamaras';
 
-const initialForm = {
-  codigo: '',
-  ubicacion: '',
-};
+const CamarasPage = () => {
+  const [listaCamaras, setListaCamaras] = useState([]);
+  const [camaraAEditar, setCamaraAEditar] = useState(null);
 
-function CamarasPage() {
-  const [items, setItems] = useState([]);
-  const [form, setForm] = useState(initialForm);
-  const [error, setError] = useState('');
-
-  const loadData = async () => {
+  const cargarDatos = async () => {
     try {
-      setError('');
       const data = await camaraService.list();
-      setItems(data);
-    } catch (err) {
-      setError(err.response?.data?.error || 'No se pudo cargar camaras');
-    }
+      setListaCamaras(data);
+    } catch (error) { console.error(error); }
   };
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    try {
-      await camaraService.create(form);
-      setForm(initialForm);
-      await loadData();
-    } catch (err) {
-      setError(err.response?.data?.error || 'No se pudo crear camara');
-    }
-  };
-
-  const handleDelete = async (id) => {
-    try {
-      await camaraService.remove(id);
-      await loadData();
-    } catch (err) {
-      setError(err.response?.data?.error || 'No se pudo eliminar camara');
-    }
-  };
+  useEffect(() => { cargarDatos(); }, []);
 
   return (
-    <section className="module-grid">
-      <div className="card">
-        <h2>Nueva camara</h2>
-        <form onSubmit={handleSubmit} className="form-grid">
-          <input
-            placeholder="Codigo"
-            value={form.codigo}
-            onChange={(e) => setForm({ ...form, codigo: e.target.value })}
-          />
-          <input
-            placeholder="Ubicacion"
-            value={form.ubicacion}
-            onChange={(e) => setForm({ ...form, ubicacion: e.target.value })}
-          />
-          <button type="submit">Guardar</button>
-        </form>
+    <div className="page-shell">
+      <div className="topbar">
+        <div>
+          <h1>Gestión de Cámaras</h1>
+          <p>Control de dispositivos de fotomulta y vigilancia</p>
+        </div>
+        <span className="tag">Sabaneta - Movilidad</span>
       </div>
 
-      <div className="card">
-        <h2>Listado</h2>
-        {error && <p className="error-msg">{error}</p>}
-        <ul className="item-list">
-          {items.map((item) => (
-            <li key={item.id_camara}>
-              <div>
-                <strong>{item.codigo}</strong>
-                <span>{item.ubicacion}</span>
-              </div>
-              <button type="button" onClick={() => handleDelete(item.id_camara)}>
-                Eliminar
-              </button>
-            </li>
-          ))}
-        </ul>
+      <div className="content-panel">
+        <div className="module-grid">
+          <div className="card">
+            <h2 style={{ fontSize: '1.2rem', marginBottom: '1rem' }}>{camaraAEditar ? 'Editar Cámara' : 'Nuevo Registro'}</h2>
+            <FormCamara onCamaraCreated={cargarDatos} datosEdicion={camaraAEditar} onCancel={() => setCamaraAEditar(null)} />
+          </div>
+          <div className="card">
+            <h2 style={{ fontSize: '1.2rem', marginBottom: '1rem' }}>Listado de Cámaras</h2>
+            <TablaCamaras listaCamaras={listaCamaras} onCamaraDeleted={cargarDatos} onEdit={(c) => setCamaraAEditar(c)} />
+          </div>
+        </div>
       </div>
-    </section>
+    </div>
   );
-}
+};
 
 export default CamarasPage;

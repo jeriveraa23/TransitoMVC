@@ -7,6 +7,7 @@ const links = [
   { to: '/agentes', label: 'Agentes' },
   { to: '/camaras', label: 'Camaras' },
   { to: '/infracciones', label: 'Infracciones' },
+  { to: '/reportes', label: 'Reportes' },
 ];
 
 function AppLayout() {
@@ -17,7 +18,10 @@ function AppLayout() {
           <h1>Transito Sabaneta</h1>
           <p>Panel administrativo MVC</p>
         </div>
-        <span className="tag">Fase 3 - Frontend</span>
+        <div className="status-badges">
+          <span className="tag">Fase 3 - Frontend</span>
+          <span className="tag tag-docker">Docker Activo</span>
+        </div>
       </header>
 
       <nav className="nav-grid" aria-label="Navegacion principal">
@@ -34,6 +38,7 @@ function AppLayout() {
       </nav>
 
       <main className="content-panel">
+        {/* Aquí es donde React Router muestra el contenido de cada página */}
         <Outlet />
       </main>
     </div>

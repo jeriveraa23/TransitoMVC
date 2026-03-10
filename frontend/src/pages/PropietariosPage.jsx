@@ -1,104 +1,69 @@
 import { useEffect, useState } from 'react';
 import { propietarioService } from '../services/propietarioService';
+import FormPropietario from '../components/propietarios/formPropietario';
+import TablaPropietarios from '../components/propietarios/tablaPropietarios';
 
-const initialForm = {
-  tipo_propietario: 'persona',
-  identificacion: '',
-  nombre: '',
-  direccion: '',
-};
+const PropietariosPage = () => {
+  const [listaPropietarios, setListaPropietarios] = useState([]);
+  const [propietarioAEditar, setPropietarioAEditar] = useState(null);
 
-function PropietariosPage() {
-  const [items, setItems] = useState([]);
-  const [form, setForm] = useState(initialForm);
-  const [error, setError] = useState('');
-
-  const loadData = async () => {
+  const cargarDatos = async () => {
     try {
-      setError('');
       const data = await propietarioService.list();
-      setItems(data);
-    } catch (err) {
-      setError(err.response?.data?.error || 'No se pudo cargar propietarios');
+      setListaPropietarios(data);
+    } catch (error) {
+      console.error("Error al cargar:", error);
     }
+  };
+
+  const prepararEdicion = (propietario) => {
+    console.log("Recibiendo datos para editar:", propietario); // Para verificar en consola
+    setPropietarioAEditar(propietario);
+  };
+
+  const cancelarEdicion = () => {
+    setPropietarioAEditar(null);
   };
 
   useEffect(() => {
-    loadData();
+    cargarDatos();
   }, []);
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    try {
-      setError('');
-      await propietarioService.create(form);
-      setForm(initialForm);
-      await loadData();
-    } catch (err) {
-      setError(err.response?.data?.error || 'No se pudo crear propietario');
-    }
-  };
-
-  const handleDelete = async (id) => {
-    try {
-      setError('');
-      await propietarioService.remove(id);
-      await loadData();
-    } catch (err) {
-      setError(err.response?.data?.error || 'No se pudo eliminar propietario');
-    }
-  };
-
   return (
-    <section className="module-grid">
-      <div className="card">
-        <h2>Nuevo propietario</h2>
-        <form onSubmit={handleSubmit} className="form-grid">
-          <select
-            value={form.tipo_propietario}
-            onChange={(e) => setForm({ ...form, tipo_propietario: e.target.value })}
-          >
-            <option value="persona">persona</option>
-            <option value="empresa">empresa</option>
-          </select>
-          <input
-            placeholder="Identificacion"
-            value={form.identificacion}
-            onChange={(e) => setForm({ ...form, identificacion: e.target.value })}
-          />
-          <input
-            placeholder="Nombre"
-            value={form.nombre}
-            onChange={(e) => setForm({ ...form, nombre: e.target.value })}
-          />
-          <input
-            placeholder="Direccion"
-            value={form.direccion}
-            onChange={(e) => setForm({ ...form, direccion: e.target.value })}
-          />
-          <button type="submit">Guardar</button>
-        </form>
+    <div className="page-shell">
+      <div className="topbar">
+        <div>
+          <h1>Gestión de Propietarios</h1>
+          <p>Registro y consulta de dueños de vehículos</p>
+        </div>
+        <span className="tag">Sabaneta - Movilidad</span>
       </div>
 
-      <div className="card">
-        <h2>Listado</h2>
-        {error && <p className="error-msg">{error}</p>}
-        <ul className="item-list">
-          {items.map((item) => (
-            <li key={item.id_propietario}>
-              <div>
-                <strong>{item.nombre}</strong>
-                <span>{item.tipo_propietario} - {item.identificacion}</span>
-              </div>
-              <button type="button" onClick={() => handleDelete(item.id_propietario)}>
-                Eliminar
-              </button>
-            </li>
-          ))}
-        </ul>
+      <div className="content-panel">
+        <div className="module-grid">
+          {/* Lado Izquierdo: Formulario */}
+          <div className="card">
+            <h2 style={{ fontSize: '1.2rem', marginBottom: '1rem' }}>Nuevo Registro</h2>
+            <FormPropietario E
+              onPropietarioCreated={cargarDatos} 
+              datosEdicion={propietarioAEditar}
+              onCancel={() => setPropietarioAEditar(null)}
+            />
+          </div>
+
+          {/* Lado Derecho: Listado */}
+          <div className="card">
+            <h2 style={{ fontSize: '1.2rem', marginBottom: '1rem' }}>Listado de Propietarios</h2>
+            <TablaPropietarios 
+              listaPropietarios={listaPropietarios} 
+              onPropietarioDeleted={cargarDatos}
+              onEdit={prepararEdicion}
+            />
+          </div>
+        </div>
       </div>
-    </section>
+    </div>
   );
-}
+};
 
 export default PropietariosPage;
