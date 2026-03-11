@@ -8,9 +8,8 @@ const TablaVehiculos = ({ listaVehiculos, onVehiculoDeleted, onEdit }) => {
       try {
         await vehiculoService.delete(id);
         onVehiculoDeleted();
-        alert("✅ Vehículo eliminado");
       } catch (error) {
-        alert("❌ Error al eliminar");
+        console.error("Error al eliminar vehículo", error);
       }
     }
   };

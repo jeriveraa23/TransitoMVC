@@ -4,8 +4,15 @@ import FormAgente from '../components/agentes/formAgente';
 import TablaAgentes from '../components/agentes/tablaAgentes';
 
 const AgentesPage = () => {
+
   const [listaAgentes, setListaAgentes] = useState([]);
   const [agenteAEditar, setAgenteAEditar] = useState(null);
+  const [mensaje, setMensaje] = useState(null);
+
+  const mostrarMensaje = (texto) => {
+    setMensaje(texto);
+    setTimeout(() => setMensaje(null), 3000);
+  };
 
   const cargarDatos = async () => {
     try {
@@ -17,6 +24,7 @@ const AgentesPage = () => {
   };
 
   const prepararEdicion = (agente) => setAgenteAEditar(agente);
+
   const cancelarEdicion = () => setAgenteAEditar(null);
 
   useEffect(() => {
@@ -25,7 +33,13 @@ const AgentesPage = () => {
 
   return (
     <div className="page-shell">
-      {/* Topbar Estandarizada con Badge de Ubicación */}
+
+      {mensaje && (
+        <div className="toast-success">
+          {mensaje}
+        </div>
+      )}
+
       <div className="topbar">
         <div>
           <h1>Gestión de Agentes</h1>
@@ -37,25 +51,29 @@ const AgentesPage = () => {
       <div className="content-panel">
         <div className="module-grid">
           
-          {/* Formulario */}
           <div className="card">
             <h2 style={{ fontSize: '1.2rem', marginBottom: '1rem' }}>
               {agenteAEditar ? 'Editar Agente' : 'Nuevo Registro'}
             </h2>
-            <FormAgente 
-              onAgenteCreated={cargarDatos} 
-              datosEdicion={agenteAEditar} 
-              onCancel={cancelarEdicion} 
+
+            <FormAgente
+              onAgenteCreated={cargarDatos}
+              datosEdicion={agenteAEditar}
+              onCancel={cancelarEdicion}
+              mostrarMensaje={mostrarMensaje}
             />
           </div>
 
-          {/* Listado */}
           <div className="card">
-            <h2 style={{ fontSize: '1.2rem', marginBottom: '1rem' }}>Listado de Agentes</h2>
-            <TablaAgentes 
-              listaAgentes={listaAgentes} 
-              onAgenteDeleted={cargarDatos} 
-              onEdit={prepararEdicion} 
+            <h2 style={{ fontSize: '1.2rem', marginBottom: '1rem' }}>
+              Listado de Agentes
+            </h2>
+
+            <TablaAgentes
+              listaAgentes={listaAgentes}
+              onAgenteDeleted={cargarDatos}
+              onEdit={prepararEdicion}
+              mostrarMensaje={mostrarMensaje}
             />
           </div>
 

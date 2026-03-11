@@ -41,15 +41,14 @@ const FormVehiculo = ({ onVehiculoCreated, datosEdicion, onCancel }) => {
     try {
       if (datosEdicion) {
         await vehiculoService.update(datosEdicion.id_vehiculo, formData);
-        alert("✅ Vehículo actualizado");
+        onVehiculoCreated("Vehículo actualizado correctamente");
       } else {
         await vehiculoService.create(formData);
-        alert("✅ Vehículo registrado");
+        onVehiculoCreated("Vehículo registrado correctamente");
       }
-      onVehiculoCreated();
       handleCancelar();
     } catch (error) {
-      alert("❌ Error: " + (error.response?.data?.error || error.message));
+      onVehiculoCreated("Error al procesar el vehículo");
     }
   };
 
