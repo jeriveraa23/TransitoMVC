@@ -1,29 +1,71 @@
-import React from 'react';
+import { useState } from "react";
+import FormReporte from "../components/reportes/formReporte";
+import TablaReporte from "../components/reportes/tablaReporte";
+import { infraccionService } from "../services/infraccionService";
 
 const ReportesPage = () => {
+
+  const [lista, setLista] = useState([]);
+
+  const buscar = async (texto) => {
+
+    try {
+
+      const data = await infraccionService.list();
+
+      const resultado = data.filter((i) => {
+
+        return (
+          i.placa.toLowerCase().includes(texto.toLowerCase()) ||
+          i.identificacion_propietario.includes(texto)
+        );
+
+      });
+
+      setLista(resultado);
+
+    } catch (error) {
+
+      console.error("Error al buscar infracciones", error);
+
+    }
+
+  };
+
   return (
-    <div className="container" style={{ padding: '20px' }}>
-      <header style={{ marginBottom: '30px', borderBottom: '2px solid #eee' }}>
-        <h1>📊 Centro de Reportes</h1>
-        <p>Estadísticas de movilidad y propietarios de Sabaneta</p>
-      </header>
+    <div className="page-shell">
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
-        {/* Placeholder para futuras gráficas */}
-        <div style={{ padding: '20px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #ddd' }}>
-          <h3>Total Propietarios</h3>
-          <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#007bff' }}>--</p>
-        </div>
-
-        <div style={{ padding: '20px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #ddd' }}>
-          <h3>Infracciones Mes</h3>
-          <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#dc3545' }}>--</p>
+      <div className="topbar">
+        <div>
+          <h1>Reportes</h1>
+          <p>Consultar infracciones por placa o propietario</p>
         </div>
       </div>
 
-      <div style={{ marginTop: '40px', textAlign: 'center', color: '#666' }}>
-        <p>Integrando datos de Postgres y Docker...</p>
+      <div className="content-panel">
+
+        <div className="module-grid">
+
+          <div className="card">
+
+            <h2 style={{ marginBottom: "15px" }}>
+              Buscar infracciones
+            </h2>
+
+            <FormReporte onBuscar={buscar} />
+
+          </div>
+
+          <div className="card">
+
+            <TablaReporte lista={lista} />
+
+          </div>
+
+        </div>
+
       </div>
+
     </div>
   );
 };

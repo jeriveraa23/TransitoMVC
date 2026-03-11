@@ -25,24 +25,27 @@ const FormPropietario = ({ onPropietarioCreated, datosEdicion, onCancel }) => {
     try {
       if (datosEdicion) {
         await propietarioService.update(datosEdicion.id_propietario, formData);
-        alert("✅ Propietario actualizado correctamente");
+        onPropietarioCreated("Propietario actualizado correctamente");
       } else {
         await propietarioService.create(formData);
-        alert("✅ Propietario registrado con éxito");
+        onPropietarioCreated("Propietario registrado correctamente");
       }
-      onPropietarioCreated();
       handleCancelar();
     } catch (error) {
-      alert("❌ Error: " + (error.response?.data?.error || error.message));
+      onPropietarioCreated("Error al procesar el propietario");
     }
   };
 
   const handleCancelar = () => {
-    setFormData({ tipo_propietario: 'persona', identificacion: '', nombre: '', direccion: '' });
+    setFormData({
+      tipo_propietario: 'persona',
+      identificacion: '',
+      nombre: '',
+      direccion: ''
+    });
     onCancel();
   };
 
-  // --- ESTÁNDAR VISUAL ---
   const estiloInput = {
     width: '100%',
     padding: '0.8rem',
@@ -54,9 +57,7 @@ const FormPropietario = ({ onPropietarioCreated, datosEdicion, onCancel }) => {
     boxSizing: 'border-box'
   };
 
-  const estiloGrupo = {
-    marginBottom: '1.2rem'
-  };
+  const estiloGrupo = { marginBottom: '1.2rem' };
 
   const estiloLabel = {
     display: 'block',
@@ -82,36 +83,33 @@ const FormPropietario = ({ onPropietarioCreated, datosEdicion, onCancel }) => {
       </div>
 
       <div style={estiloGrupo}>
-        <label style={estiloLabel}>Identificación (Cédula/NIT)</label>
+        <label style={estiloLabel}>Identificación</label>
         <input 
           type="text" 
           value={formData.identificacion}
           onChange={(e) => setFormData({...formData, identificacion: e.target.value})}
-          placeholder="Ej: 1000394717"
           style={estiloInput}
           required 
         />
       </div>
 
       <div style={estiloGrupo}>
-        <label style={estiloLabel}>Nombre Completo / Razón Social</label>
+        <label style={estiloLabel}>Nombre</label>
         <input 
           type="text" 
           value={formData.nombre}
           onChange={(e) => setFormData({...formData, nombre: e.target.value})}
-          placeholder="Ej: Jorge Perez"
           style={estiloInput}
           required 
         />
       </div>
 
       <div style={estiloGrupo}>
-        <label style={estiloLabel}>Dirección de Residencia</label>
+        <label style={estiloLabel}>Dirección</label>
         <input 
           type="text" 
           value={formData.direccion}
           onChange={(e) => setFormData({...formData, direccion: e.target.value})}
-          placeholder="Ej: Calle 10 # 45-20"
           style={estiloInput}
           required 
         />
@@ -125,19 +123,18 @@ const FormPropietario = ({ onPropietarioCreated, datosEdicion, onCancel }) => {
         >
           {datosEdicion ? 'Actualizar Propietario' : 'Registrar Propietario'}
         </button>
-        
+
         {datosEdicion && (
           <button 
             type="button" 
-            onClick={handleCancelar} 
-            style={{ 
-              flex: 1, 
-              backgroundColor: '#64748b', 
-              color: 'white', 
-              border: 'none', 
-              borderRadius: '8px', 
-              cursor: 'pointer',
-              fontWeight: '500'
+            onClick={handleCancelar}
+            style={{
+              flex: 1,
+              backgroundColor: '#64748b',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer'
             }}
           >
             Cancelar

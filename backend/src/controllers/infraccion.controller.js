@@ -30,7 +30,7 @@ const InfraccionController = {
 
     delete: async (req, res) => {
         try {
-            await infraccionService.delete(req.params.id); // Usando delete en lugar de remove
+            await infraccionService.delete(req.params.id);
             res.status(204).send();
         } catch (error) {
             res.status(error.statusCode || 500).json({ error: error.message });
