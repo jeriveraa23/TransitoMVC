@@ -117,7 +117,7 @@ const FormInfraccion = ({ onInfraccionCreated, datosEdicion, onCancel }) => {
           <select value={formData.camara_id} onChange={(e) => setFormData({...formData, camara_id: e.target.value})} style={estiloInput} required>
             <option value="">Seleccione cámara...</option>
             {listas.camaras.map(c => (
-              <option key={`cam-${c.id_camaras}`} value={c.id_camaras}>{c.codigo}</option>
+              <option key={`cam-${c.id_camara}`} value={c.id_camara}>{c.codigo}</option>
             ))}
           </select>
         </div>
