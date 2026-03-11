@@ -7,18 +7,32 @@
 .topbar {
   display: flex;
   justify-content: space-between;
-  align-items: end;
+  align-items: center;
   margin-bottom: 1rem;
 }
 
-.topbar h1 {
+.topbar-subtitle {
   margin: 0;
-  font-size: 2rem;
+  color: #586170;
+  font-size: 0.95rem;
 }
 
-.topbar p {
-  margin: 0.2rem 0 0;
-  color: #586170;
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.topbar-brand h1 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: #103053;
+}
+
+.topbar-escudo {
+  height: 48px;
+  width: auto;
+  object-fit: contain;
 }
 
 .tag {

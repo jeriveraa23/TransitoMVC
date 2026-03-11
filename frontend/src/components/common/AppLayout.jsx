@@ -15,12 +15,15 @@ function AppLayout() {
     <div className="page-shell">
       <header className="topbar">
         <div>
-          <h1>Transito Sabaneta</h1>
-          <p>Panel administrativo MVC</p>
-        </div>
-        <div className="status-badges">
-          <span className="tag">Fase 3 - Frontend</span>
-          <span className="tag tag-docker">Docker Activo</span>
+          <div className="topbar-brand">
+            <h1>Transito Sabaneta</h1>
+            <img
+              src="/escudo-sabaneta.png"
+              alt="Escudo de Sabaneta"
+              className="topbar-escudo"
+            />
+          </div>
+          <p className="topbar-subtitle">Panel administrativo MVC</p>
         </div>
       </header>
 
