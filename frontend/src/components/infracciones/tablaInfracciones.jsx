@@ -1,34 +1,21 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { infraccionService } from '../../services/infraccionService';
 
 const TablaInfracciones = ({ lista, onDeleted, onEdit }) => {
-  const [aviso, setAviso] = useState("");
-
-  const mostrarNotificacion = (msg) => {
-    setAviso(msg);
-    setTimeout(() => setAviso(""), 3000);
-  };
 
   const handleEliminar = async (id) => {
     if (window.confirm("¿Desea eliminar esta infracción?")) {
       try {
         await infraccionService.delete(id);
-        mostrarNotificacion("Infracción eliminada correctamente");
-        setTimeout(() => onDeleted(), 1000);
+        onDeleted();
       } catch (error) { 
-        mostrarNotificacion("Error al eliminar la infracción"); 
+        console.error("Error al eliminar la infracción", error);
       }
     }
   };
 
   return (
     <div style={{ position: 'relative' }}>
-      {aviso && (
-        <div style={{ position: 'fixed', top: '20px', right: '20px', backgroundColor: '#e11d48', color: 'white', padding: '1rem 2rem', borderRadius: '8px', zIndex: 9999, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-          {aviso}
-        </div>
-      )}
-
       <div style={{ maxHeight: '480px', overflowY: 'auto', border: '1px solid #f1f5f9', borderRadius: '12px' }}>
         <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
           {lista.map((i) => (
@@ -43,8 +30,12 @@ const TablaInfracciones = ({ lista, onDeleted, onEdit }) => {
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                <button onClick={() => onEdit(i)} style={{ padding: '5px 12px', borderRadius: '8px', border: '1px solid #ddd', cursor: 'pointer', fontSize: '0.8rem' }}>Editar</button>
-                <button onClick={() => handleEliminar(i.id_infraccion)} style={{ padding: '5px 12px', borderRadius: '8px', border: 'none', backgroundColor: '#0f172a', color: 'white', cursor: 'pointer', fontSize: '0.8rem' }}>Borrar</button>
+                <button onClick={() => onEdit(i)} style={{ padding: '5px 12px', borderRadius: '8px', border: '1px solid #ddd', cursor: 'pointer', fontSize: '0.8rem' }}>
+                  Editar
+                </button>
+                <button onClick={() => handleEliminar(i.id_infraccion)} style={{ padding: '5px 12px', borderRadius: '8px', border: 'none', backgroundColor: '#0f172a', color: 'white', cursor: 'pointer', fontSize: '0.8rem' }}>
+                  Borrar
+                </button>
               </div>
             </li>
           ))}
