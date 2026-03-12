@@ -15,15 +15,14 @@ const FormCamara = ({ onCamaraCreated, datosEdicion, onCancel }) => {
     try {
       if (datosEdicion) {
         await camaraService.update(datosEdicion.id_camara, formData);
-        alert("✅ Cámara actualizada");
+        onCamaraCreated("Cámara actualizada correctamente");
       } else {
         await camaraService.create(formData);
-        alert("✅ Cámara registrada");
+        onCamaraCreated("Cámara registrada correctamente");
       }
-      onCamaraCreated();
       handleCancelar();
     } catch (error) {
-      alert("❌ Error: " + (error.response?.data?.error || error.message));
+      onCamaraCreated("Error al procesar la cámara");
     }
   };
 
@@ -65,6 +64,7 @@ const FormCamara = ({ onCamaraCreated, datosEdicion, onCancel }) => {
         <button type="submit" className="nav-chip is-active" style={{ flex: 2, border: 'none', cursor: 'pointer', padding: '0.8rem', fontWeight: 'bold' }}>
           {datosEdicion ? 'Actualizar Cámara' : 'Registrar Cámara'}
         </button>
+
         {datosEdicion && (
           <button type="button" onClick={handleCancelar} style={{ flex: 1, backgroundColor: '#64748b', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>
             Cancelar

@@ -7,11 +7,11 @@ const AgentesPage = () => {
 
   const [listaAgentes, setListaAgentes] = useState([]);
   const [agenteAEditar, setAgenteAEditar] = useState(null);
-  const [mensaje, setMensaje] = useState(null);
+  const [mensaje, setMensaje] = useState("");
 
   const mostrarMensaje = (texto) => {
     setMensaje(texto);
-    setTimeout(() => setMensaje(null), 3000);
+    setTimeout(() => setMensaje(""), 3000);
   };
 
   const cargarDatos = async () => {
@@ -32,10 +32,21 @@ const AgentesPage = () => {
   }, []);
 
   return (
-    <div className="page-shell">
+    <div className="page-shell" style={{ position: 'relative' }}>
 
       {mensaje && (
-        <div className="toast-success">
+        <div style={{
+          position: 'fixed',
+          top: '20px',
+          right: '20px',
+          backgroundColor: '#0f172a',
+          color: 'white',
+          padding: '1rem 2rem',
+          borderRadius: '8px',
+          zIndex: 9999,
+          boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)',
+          animation: 'fadeIn 0.3s ease-out'
+        }}>
           {mensaje}
         </div>
       )}
@@ -79,6 +90,14 @@ const AgentesPage = () => {
 
         </div>
       </div>
+
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateX(20px); }
+          to { opacity: 1; transform: translateX(0); }
+        }
+      `}</style>
+
     </div>
   );
 };
