@@ -36,6 +36,12 @@ const CamaraRepository = {
         return rows[0];
     },
 
+    findById: async (id) => {
+        const query = 'SELECT * FROM camaras WHERE id_camara = $1;';
+        const { rows } = await db.query(query, [id]);
+        return rows[0];
+    },
+
     findAll: async () => {
         const { rows } = await db.query('SELECT * FROM camaras;');
         return rows;

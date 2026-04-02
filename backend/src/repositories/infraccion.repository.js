@@ -14,6 +14,12 @@ const InfraccionRepository = {
         return rows[0];
     },
 
+    findAll: async () => {
+        const query = `SELECT * FROM infracciones ORDER BY fecha_infraccion DESC;`;
+        const { rows } = await db.query(query);
+        return rows;
+    },
+
     findAllDetailed: async () => {
         const query = `
             SELECT

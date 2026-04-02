@@ -1,48 +1,49 @@
 require('dotenv').config();
-
 const express = require('express');
 const cors = require('cors');
-const { testConnection, pool } = require('./src/config/database');
-const apiRoutes = require('./src/routes');
+const { ApolloServer } = require('apollo-server-express');
+const typeDefs = require('./src/graphql/typeDefs');
+const resolvers = require('./src/graphql/resolvers');
+const { testConnection } = require('./src/config/database');
 
-const app = express();
+async function startServer() {
+    const app = express();
+    
+    // 1. CORS primero que todo
+    app.use(cors());
 
-app.use(cors());
-app.use(express.json());
+    // 2. IMPORTANTE: NO uses app.use(express.json()) antes de Apollo
+    // Si tienes rutas REST viejas que lo necesiten, úsalo SOLO en esas rutas
+    // o ponlo DESPUÉS de server.applyMiddleware.
 
-app.get('/', (req, res) => {
-  res.send('<h1>Servidor de Transito Sabaneta corriendo</h1>');
-});
-
-app.get('/api/health', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT NOW() AS server_time');
-    res.json({
-      ok: true,
-      db: 'connected',
-      time: result.rows[0].server_time,
+    const server = new ApolloServer({
+        typeDefs,
+        resolvers,
     });
-  } catch (error) {
-    res.status(500).json({
-      ok: false,
-      db: 'error',
-      message: error.message,
+
+    await server.start();
+    
+    // 3. Apollo consume su propio body, así que va aquí
+    server.applyMiddleware({ app });
+
+    // 4. Si aún necesitas express.json para rutas que NO sean GraphQL:
+    app.use(express.json()); 
+
+    app.get('/', (req, res) => {
+        res.send('<h1>Servidor de Transito Sabaneta corriendo</h1>');
     });
-  }
-});
 
-app.use('/api', apiRoutes);
+    const PORT = process.env.PORT || 4000;
 
-const PORT = process.env.PORT || 3000;
+    try {
+        await testConnection();
+        app.listen(PORT, '0.0.0.0', () => {
+            console.log(`🚀 Servidor listo en http://localhost:${PORT}${server.graphqlPath}`);
+        });
+    } catch (error) {
+        console.error('Error:', error.message);
+        process.exit(1);
+    }
+}
 
-(async () => {
-  try {
-    await testConnection();
-    app.listen(PORT, () => {
-      console.log(`Servidor escuchando en puerto ${PORT}`);
-    });
-  } catch (error) {
-    console.error('No se pudo conectar a PostgreSQL:', error.message);
-    process.exit(1);
-  }
-})();
+startServer();

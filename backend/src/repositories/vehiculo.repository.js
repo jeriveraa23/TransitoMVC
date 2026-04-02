@@ -22,15 +22,17 @@ const VehiculoRepository = {
         return rows[0];
     },
 
+    findById: async (id) => {
+        const query = 'SELECT * FROM vehiculos WHERE id_vehiculo = $1;';
+        const { rows } = await db.query(query, [id]);
+        return rows[0];
+    },
+
     // Obtener todos los vehículos con el nombre de su dueño (JOIN)
     findAll: async () => {
-        const query = `
-            SELECT 
-            v.*, 
-            p.nombre as nombre_propietario 
-            FROM vehiculos v
-            JOIN propietario p ON v.propietario_id = p.id_propietario;
-        `;
+        // Quitamos el JOIN. Solo necesitamos los datos base del vehículo.
+        // El resolver de campo se encargará de buscar al dueño por aparte.
+        const query = 'SELECT * FROM vehiculos;'; 
         const { rows } = await db.query(query);
         return rows;
     },

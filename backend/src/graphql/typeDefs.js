@@ -1,74 +1,96 @@
 const { gql } = require('apollo-server-express');
 
 const typeDefs = gql`
-# --- DEFINICIÓN DE OBJETOS ---#
+  # --- DEFINICIÓN DE OBJETOS --- #
 
-type Propietario {
+  type Propietario {
     id_propietario: ID!
     tipo_propietario: String!
     identificacion: String!
     nombre: String!
     direccion: String!
-    vehiculos: [Vehiculo]
-}
+  }
 
-type Vehiculo {
+  type Vehiculo {
     id_vehiculo: ID!
     placa: String!
     marca: String!
     fecha_matricula: String!
     tipo_vehiculo: String!
+    propietario_id: Int!
+    # Relación virtual para obtener el objeto completo del dueño
     propietario: Propietario
-}
+  }
 
-type Agente {
+  type Agente {
     id_agente: ID!
     identificacion: String!
     nombre: String!
-}
+  }
 
-type Camara {
+  type Camara {
     id_camara: ID!
     codigo: String!
     ubicacion: String!
-}
+  }
 
-type Infraccion {
+  type Infraccion {
     id_infraccion: ID!
     fecha_infraccion: String!
     descripcion: String!
     valor: Float!
+    vehiculo_id: Int!
+    agente_id: Int 
+    camara_id: Int
+    # Relaciones virtuales
     vehiculo: Vehiculo
     agente: Agente
     camara: Camara
-}
+  }
 
-# --- CONSULTAS ---#
+  type InfraccionDetallada {
+    id_infraccion: ID!
+    fecha_infraccion: String!
+    descripcion: String!
+    valor: Float!
+    vehiculo_id: Int!
+    agente_id: Int
+    camara_id: Int
+    placa: String
+    identificacion_propietario: String
+    nombre_agente: String
+    codigo_camara: String
+  }
 
-type Query {
-    # Agentes (findById, findAll)
+  # --- CONSULTAS (Queries) --- #
+
+  type Query {
+    # Agentes
     agentePorId(id: ID!): Agente
     listarAgentes: [Agente]
 
-    # Cámaras (findByCodigo, findAll, findByLocation)
+    # Cámaras
     buscarCamaraCodigo(codigo: String!): Camara
     listarCamaras: [Camara]
     buscarCamarasPorUbicacion(ubicacion: String!): [Camara]
 
-    # Infracciones (findAllDetailed)
-    # reporteDetalladoInfracciones: [InfraccionDetallada]
+    # Infracciones
+    listarInfracciones: [Infraccion]
+    listarInfraccionesDetalladas: [InfraccionDetallada]
+    infraccionPorId(id: ID!): Infraccion
 
-    # Propietarios (findAll, findById)
+    # Propietarios
     listarPropietarios: [Propietario]
     propietarioPorId(id: ID!): Propietario
 
-    # Vehículos (findByPlaca, findAll)
+    # Vehículos
     buscarVehiculoPlaca(placa: String!): Vehiculo
     listarVehiculos: [Vehiculo]
-}
+  }
 
-#--- MUTACIONES ---#
-type Mutation {
+  # --- MUTACIONES (Mutations) --- #
+
+  type Mutation {
     # Agentes
     crearAgente(identificacion: String!, nombre: String!): Agente
     actualizarAgente(id: ID!, identificacion: String!, nombre: String!): Agente
@@ -76,7 +98,7 @@ type Mutation {
 
     # Cámaras
     crearCamara(codigo: String!, ubicacion: String!): Camara
-    actualizarCamara(id; ID!, codigo: String!, ubicacion: String!): Camara
+    actualizarCamara(id: ID!, codigo: String!, ubicacion: String!): Camara
     eliminarCamara(id: ID!): Camara
 
     # Propietarios
@@ -91,10 +113,9 @@ type Mutation {
 
     # Infracciones
     crearInfraccion(vehiculo_id: Int!, fecha_infraccion: String!, descripcion: String!, valor: Float!, agente_id: Int, camara_id: Int): Infraccion
-    actualizarInfraccion(id: ID!, vehiculo_id: Int!, fecha_infraccion: String!, descripcion: String!, valor: Float!, agente_id: int, camara_id: int): Infraccion
+    actualizarInfraccion(id: ID!, vehiculo_id: Int!, fecha_infraccion: String!, descripcion: String!, valor: Float!, agente_id: Int, camara_id: Int): Infraccion
     eliminarInfraccion(id: ID!): Infraccion
-
-}
-
-
+  }
 `;
+
+module.exports = typeDefs;
