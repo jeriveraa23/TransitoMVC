@@ -1,13 +1,11 @@
+# backend/Dockerfile
 FROM node:18-alpine
-
 WORKDIR /usr/src/app
-
 COPY package*.json ./
 
-RUN npm install
+# Añadimos la bandera para saltar el conflicto de versiones
+RUN npm install --legacy-peer-deps
 
 COPY . .
-
-EXPOSE 3000
-
+EXPOSE 4000
 CMD ["node", "server.js"]
