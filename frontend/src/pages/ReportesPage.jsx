@@ -8,28 +8,17 @@ const ReportesPage = () => {
   const [lista, setLista] = useState([]);
 
   const buscar = async (texto) => {
-
     try {
+      const data = await infraccionService.listDetallada();
+      console.log("Datos recibidos del servidor:", data); // Mira esto en la consola (F12)
 
-      const data = await infraccionService.list();
-
-      const resultado = data.filter((i) => {
-
-        return (
-          i.placa.toLowerCase().includes(texto.toLowerCase()) ||
-          i.identificacion_propietario.includes(texto)
-        );
-
-      });
-
-      setLista(resultado);
+      // COMENTA EL FILTRO MOMENTÁNEAMENTE:
+      // Solo para ver si la tabla se llena con todo
+      setLista(data); 
 
     } catch (error) {
-
       console.error("Error al buscar infracciones", error);
-
     }
-
   };
 
   return (

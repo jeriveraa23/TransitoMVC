@@ -42,7 +42,7 @@ const TablaVehiculos = ({ listaVehiculos, onVehiculoDeleted, onEdit }) => {
                   {v.marca} — {v.tipo_vehiculo}
                 </span>
                 <div style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '0.3rem' }}>
-                  Dueño: <span style={{ fontWeight: '600', color: '#0f172a' }}>{v.nombre_propietario}</span>
+                  Dueño: <span style={{ fontWeight: '600', color: '#0f172a' }}>{v.propietario?.nombre || "Sin asignar"}</span>
                 </div>
               </div>
 

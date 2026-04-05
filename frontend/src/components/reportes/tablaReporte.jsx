@@ -84,7 +84,7 @@ const TablaReporte = ({ lista }) => {
                   </td>
 
                   <td style={estiloTd}>
-                    {new Date(i.fecha_infraccion).toLocaleDateString()}
+                    {i.fecha_infraccion ? new Date(Number(i.fecha_infraccion)).toLocaleDateString('es-CO') : "Sin fecha"}
                   </td>
 
                   <td style={{
