@@ -126,6 +126,7 @@ const vehiculoService = {
 			fecha_matricula: data.fecha_matricula,
 			tipo_vehiculo: data.tipo_vehiculo,
 			propietario_id: propietarioId,
+			imagen: data.imagen,
 		});
 
 		if (!updated) {

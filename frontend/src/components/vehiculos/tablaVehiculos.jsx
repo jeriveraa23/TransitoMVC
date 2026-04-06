@@ -16,7 +16,18 @@ const TablaVehiculos = ({ listaVehiculos, onVehiculoDeleted, onEdit, onVehiculoU
     }
   };
 
-  const handleMostrarImagen = async (idVehiculo) => {
+  const handleMostrarImagen = async (vehiculoSeleccionado) => {
+    if (vehiculoSeleccionado?.imagen) {
+      setVehiculoConImagen(vehiculoSeleccionado);
+      return;
+    }
+
+    const idVehiculo = vehiculoSeleccionado?.id_vehiculo;
+    if (!idVehiculo) {
+      onVehiculoUpdated('No se pudo identificar el vehiculo.');
+      return;
+    }
+
     setCargandoImagen(true);
     try {
       const vehiculo = await vehiculoService.getById(idVehiculo);
@@ -86,20 +97,20 @@ const TablaVehiculos = ({ listaVehiculos, onVehiculoDeleted, onEdit, onVehiculoU
               <div style={{ display: 'flex', gap: '0.6rem' }}>
                 <button
                   className="nav-chip"
-                  onClick={() => handleMostrarImagen(v.id_vehiculo)}
+                  onClick={() => handleMostrarImagen(v)}
                   style={{
                     fontSize: '0.75rem',
-                    cursor: v.tiene_imagen ? 'pointer' : 'not-allowed',
+                    cursor: 'pointer',
                     backgroundColor: '#ecfeff',
                     color: '#155e75',
                     border: '1px solid #a5f3fc',
                     padding: '0.5rem 1rem',
                     borderRadius: '8px',
                     fontWeight: '600',
-                    opacity: v.tiene_imagen ? 1 : 0.65
+                    opacity: 1
                   }}
-                  disabled={!v.tiene_imagen || cargandoImagen}
-                  title={v.tiene_imagen ? 'Mostrar imagen del vehiculo' : 'Sin imagen registrada'}
+                  disabled={cargandoImagen}
+                  title="Mostrar imagen del vehiculo"
                 >
                   {cargandoImagen ? 'Cargando...' : 'Mostrar imagen'}
                 </button>

@@ -21,7 +21,7 @@ export const vehiculoService = {
     const response = await api.post('', {
       query: `query { 
         listarVehiculos { 
-          id_vehiculo placa marca fecha_matricula tipo_vehiculo propietario_id tiene_imagen
+          id_vehiculo placa marca fecha_matricula tipo_vehiculo propietario_id imagen tiene_imagen
           propietario { nombre } 
         } 
       }`

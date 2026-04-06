@@ -4,7 +4,19 @@ const cors = require('cors');
 const { ApolloServer } = require('apollo-server-express');
 const typeDefs = require('./src/graphql/typeDefs');
 const resolvers = require('./src/graphql/resolvers');
-const { testConnection } = require('./src/config/database');
+const { testConnection, query } = require('./src/config/database');
+
+async function ensureVehiculoImageColumns() {
+    await query(`
+        ALTER TABLE vehiculos
+        ADD COLUMN IF NOT EXISTS imagen BYTEA;
+    `);
+
+    await query(`
+        ALTER TABLE vehiculos
+        ADD COLUMN IF NOT EXISTS imagen_mime_type VARCHAR(50);
+    `);
+}
 
 async function startServer() {
     const app = express();
@@ -43,6 +55,7 @@ async function startServer() {
 
     try {
         await testConnection();
+        await ensureVehiculoImageColumns();
         app.listen(PORT, '0.0.0.0', () => {
             console.log(`🚀 Servidor listo en http://localhost:${PORT}${server.graphqlPath}`);
         });
