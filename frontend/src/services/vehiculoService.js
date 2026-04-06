@@ -1,5 +1,21 @@
 import api from './api';
 
+function unwrapGraphQLResponse(response, dataKey) {
+  const graphQLErrors = response?.data?.errors;
+  if (Array.isArray(graphQLErrors) && graphQLErrors.length > 0) {
+    const error = new Error(graphQLErrors[0]?.message || 'Error de GraphQL');
+    error.response = {
+      status: response?.status,
+      data: {
+        errors: graphQLErrors,
+      },
+    };
+    throw error;
+  }
+
+  return response?.data?.data?.[dataKey];
+}
+
 export const vehiculoService = {
   list: async () => {
     const response = await api.post('', {
@@ -10,7 +26,7 @@ export const vehiculoService = {
         } 
       }`
     });
-    return response.data.data.listarVehiculos;
+    return unwrapGraphQLResponse(response, 'listarVehiculos');
   },
   getById: async (id) => {
     const response = await api.post('', {
@@ -22,7 +38,7 @@ export const vehiculoService = {
       }`,
       variables: { id }
     });
-    return response.data.data.vehiculoPorId;
+    return unwrapGraphQLResponse(response, 'vehiculoPorId');
   },
 create: async (payload) => {
     const response = await api.post('', {
@@ -37,7 +53,7 @@ create: async (payload) => {
         propietario_id: parseInt(payload.propietario_id, 10)
       }
     });
-    return response.data.data.crearVehiculo;
+    return unwrapGraphQLResponse(response, 'crearVehiculo');
   },
 
 update: async (id, payload) => {
@@ -54,7 +70,7 @@ update: async (id, payload) => {
         propietario_id: parseInt(payload.propietario_id, 10)
       }
     });
-    return response.data.data.actualizarVehiculo;
+    return unwrapGraphQLResponse(response, 'actualizarVehiculo');
 },
   updateImage: async (id, imagen) => {
     const response = await api.post('', {
@@ -63,7 +79,7 @@ update: async (id, payload) => {
       }`,
       variables: { id, imagen }
     });
-    return response.data.data.actualizarImagenVehiculo;
+    return unwrapGraphQLResponse(response, 'actualizarImagenVehiculo');
   },
   removeImage: async (id) => {
     const response = await api.post('', {
@@ -72,13 +88,13 @@ update: async (id, payload) => {
       }`,
       variables: { id }
     });
-    return response.data.data.eliminarImagenVehiculo;
+    return unwrapGraphQLResponse(response, 'eliminarImagenVehiculo');
   },
   delete: async (id) => {
     const response = await api.post('', {
       query: `mutation($id: ID!) { eliminarVehiculo(id: $id) { id_vehiculo } }`,
       variables: { id }
     });
-    return response.data.data.eliminarVehiculo;
+    return unwrapGraphQLResponse(response, 'eliminarVehiculo');
   }
 };

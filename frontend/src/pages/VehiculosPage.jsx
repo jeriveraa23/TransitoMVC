@@ -14,6 +14,8 @@ const VehiculosPage = () => {
       setListaVehiculos(data);
     } catch (error) {
       console.error("Error al cargar vehículos:", error);
+      const message = error?.response?.data?.errors?.[0]?.message || "No se pudo cargar el listado de vehículos";
+      setAviso(message);
     }
   };
 
