@@ -21,7 +21,7 @@ services:
   app:
     build: ./backend
     container_name: app_transito
-    command: npm run dev
+    command: sh -c "npm install --legacy-peer-deps && npm run dev"
     ports:
       - "4000:4000"
     depends_on:

@@ -88,6 +88,10 @@ const VehiculosPage = () => {
                 notificar("Vehículo eliminado correctamente");
               }}
               onEdit={prepararEdicion}
+              onVehiculoUpdated={(msg)=>{
+                cargarDatos();
+                notificar(msg);
+              }}
             />
           </div>
 

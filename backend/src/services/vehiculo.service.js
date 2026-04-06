@@ -1,5 +1,6 @@
 const vehiculoRepository = require('../repositories/vehiculo.repository');
 const propietarioRepository = require('../repositories/propietario.repository');
+const MAX_IMAGE_BYTES = 2 * 1024 * 1024;
 
 function buildError(message, statusCode = 400) {
 	const error = new Error(message);
@@ -28,6 +29,24 @@ function validatePlaca(placa) {
 	}
 }
 
+function validateImagenDataUrl(imagen) {
+	if (imagen === undefined || imagen === null || String(imagen).trim() === '') {
+		return;
+	}
+
+	const rawImage = String(imagen).trim();
+	const matches = /^data:(image\/[a-zA-Z0-9.+-]+);base64,([A-Za-z0-9+/=\s]+)$/.exec(rawImage);
+	if (!matches) {
+		throw buildError('La imagen debe estar en formato data URL base64 de tipo image/*', 400);
+	}
+
+	const base64Content = matches[2].replace(/\s/g, '');
+	const bytes = Buffer.byteLength(base64Content, 'base64');
+	if (bytes > MAX_IMAGE_BYTES) {
+		throw buildError('La imagen supera el limite de 2 MB', 400);
+	}
+}
+
 async function validatePropietarioExists(propietarioId) {
 	const propietario = await propietarioRepository.findById(propietarioId);
 	if (!propietario) {
@@ -40,6 +59,7 @@ const vehiculoService = {
 		validateRequiredFields(data, ['placa', 'marca', 'fecha_matricula', 'tipo_vehiculo', 'propietario_id']);
 		validatePlaca(data.placa);
 		validateTipoVehiculo(data.tipo_vehiculo);
+		validateImagenDataUrl(data.imagen);
 
 		const propietarioId = Number(data.propietario_id);
 		if (Number.isNaN(propietarioId) || propietarioId <= 0) {
@@ -58,6 +78,20 @@ const vehiculoService = {
 
 	findAll: async () => {
 		return vehiculoRepository.findAll();
+	},
+
+	findById: async (id) => {
+		const vehiculoId = Number(id);
+		if (Number.isNaN(vehiculoId) || vehiculoId <= 0) {
+			throw buildError('ID de vehiculo invalido', 400);
+		}
+
+		const vehiculo = await vehiculoRepository.findById(vehiculoId);
+		if (!vehiculo) {
+			throw buildError('Vehiculo no encontrado', 404);
+		}
+
+		return vehiculo;
 	},
 
 	findByPlaca: async (placa) => {
@@ -79,6 +113,7 @@ const vehiculoService = {
 
 		validateRequiredFields(data, ['marca', 'fecha_matricula', 'tipo_vehiculo', 'propietario_id']);
 		validateTipoVehiculo(data.tipo_vehiculo);
+		validateImagenDataUrl(data.imagen);
 
 		const propietarioId = Number(data.propietario_id);
 		if (Number.isNaN(propietarioId) || propietarioId <= 0) {
@@ -93,6 +128,37 @@ const vehiculoService = {
 			propietario_id: propietarioId,
 		});
 
+		if (!updated) {
+			throw buildError('Vehiculo no encontrado', 404);
+		}
+
+		return updated;
+	},
+
+	updateImage: async (id, imagen) => {
+		const vehiculoId = Number(id);
+		if (Number.isNaN(vehiculoId) || vehiculoId <= 0) {
+			throw buildError('ID de vehiculo invalido', 400);
+		}
+
+		validateRequiredFields({ imagen }, ['imagen']);
+		validateImagenDataUrl(imagen);
+
+		const updated = await vehiculoRepository.updateImage(vehiculoId, imagen);
+		if (!updated) {
+			throw buildError('Vehiculo no encontrado', 404);
+		}
+
+		return updated;
+	},
+
+	removeImage: async (id) => {
+		const vehiculoId = Number(id);
+		if (Number.isNaN(vehiculoId) || vehiculoId <= 0) {
+			throw buildError('ID de vehiculo invalido', 400);
+		}
+
+		const updated = await vehiculoRepository.removeImage(vehiculoId);
 		if (!updated) {
 			throw buildError('Vehiculo no encontrado', 404);
 		}

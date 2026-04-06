@@ -3,6 +3,7 @@ const CamaraRepository = require('../repositories/camara.repository')
 const InfraccionRepository = require('../repositories/infraccion.repository')
 const PropietarioRepository = require('../repositories/propietario.repository')
 const VehiculoRepository = require('../repositories/vehiculo.repository')
+const VehiculoService = require('../services/vehiculo.service')
 
 const resolvers = {
     Query: {
@@ -20,8 +21,9 @@ const resolvers = {
         propietarioPorId: async (_, { id }) => await PropietarioRepository.findById(id),
 
         // --- VEHÍCULOS ---
-        buscarVehiculoPlaca: async (_, { placa }) => await VehiculoRepository.findByPlaca(placa),
-        listarVehiculos: async () => await VehiculoRepository.findAll(),
+        buscarVehiculoPlaca: async (_, { placa }) => await VehiculoService.findByPlaca(placa),
+        vehiculoPorId: async (_, { id }) => await VehiculoService.findById(id),
+        listarVehiculos: async () => await VehiculoService.findAll(),
 
         // --- INFRACCIONES ---
         listarInfracciones: async () => await InfraccionRepository.findAll(),
@@ -46,9 +48,11 @@ const resolvers = {
         eliminarPropietario: async (_, { id }) => await PropietarioRepository.delete(id),
 
         // --- VEHÍCULOS ---
-        crearVehiculo: async (_, args) => await VehiculoRepository.create(args),
-        actualizarVehiculo: async (_, { id, ...data }) => await VehiculoRepository.update(id, data),
-        eliminarVehiculo: async (_, { id }) => await VehiculoRepository.delete(id),
+        crearVehiculo: async (_, args) => await VehiculoService.create(args),
+        actualizarVehiculo: async (_, { id, ...data }) => await VehiculoService.update(id, data),
+        actualizarImagenVehiculo: async (_, { id, imagen }) => await VehiculoService.updateImage(id, imagen),
+        eliminarImagenVehiculo: async (_, { id }) => await VehiculoService.removeImage(id),
+        eliminarVehiculo: async (_, { id }) => await VehiculoService.delete(id),
 
         // --- INFRACCIONES ---
         crearInfraccion: async (_, args) => await InfraccionRepository.create(args),

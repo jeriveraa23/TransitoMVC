@@ -32,7 +32,8 @@ const FormPropietario = ({ onPropietarioCreated, datosEdicion, onCancel }) => {
       }
       handleCancelar();
     } catch (error) {
-      onPropietarioCreated("Error al procesar el propietario");
+      const message = error?.response?.data?.errors?.[0]?.message || "Error al procesar el propietario";
+      onPropietarioCreated(message);
     }
   };
 

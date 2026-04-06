@@ -2,14 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { vehiculoService } from '../../services/vehiculoService';
 import { propietarioService } from '../../services/propietarioService';
 
+const MAX_IMAGE_MB = 2;
+
 const FormVehiculo = ({ onVehiculoCreated, datosEdicion, onCancel }) => {
   const [propietarios, setPropietarios] = useState([]);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [imageError, setImageError] = useState('');
   const [formData, setFormData] = useState({
     placa: '',
     marca: '',
     fecha_matricula: '',
     tipo_vehiculo: 'automovil',
-    propietario_id: ''
+    propietario_id: '',
+    imagen: ''
   });
 
   useEffect(() => {
@@ -29,12 +34,41 @@ const FormVehiculo = ({ onVehiculoCreated, datosEdicion, onCancel }) => {
       setFormData({
         placa: datosEdicion.placa,
         marca: datosEdicion.marca,
-        fecha_matricula: datosEdicion.fecha_matricula.split('T')[0],
+        fecha_matricula: String(datosEdicion.fecha_matricula).split('T')[0],
         tipo_vehiculo: datosEdicion.tipo_vehiculo,
-        propietario_id: datosEdicion.propietario_id
+        propietario_id: datosEdicion.propietario_id,
+        imagen: ''
       });
+      setImagePreview(null);
+      setImageError('');
     }
   }, [datosEdicion]);
+
+  const handleImageChange = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+      setImageError('Solo se permiten archivos de tipo imagen.');
+      return;
+    }
+
+    if (file.size > MAX_IMAGE_MB * 1024 * 1024) {
+      setImageError(`La imagen no puede superar ${MAX_IMAGE_MB} MB.`);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const imageDataUrl = String(reader.result || '');
+      setFormData((prev) => ({ ...prev, imagen: imageDataUrl }));
+      setImagePreview(imageDataUrl);
+      setImageError('');
+    };
+    reader.readAsDataURL(file);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -48,12 +82,17 @@ const FormVehiculo = ({ onVehiculoCreated, datosEdicion, onCancel }) => {
       }
       handleCancelar();
     } catch (error) {
-      onVehiculoCreated("Error al procesar el vehículo");
+      const message = error?.response?.status === 413
+        ? `La imagen es demasiado pesada para enviarla. Usa una menor a ${MAX_IMAGE_MB} MB.`
+        : (error?.response?.data?.errors?.[0]?.message || "Error al procesar el vehículo");
+      onVehiculoCreated(message);
     }
   };
 
   const handleCancelar = () => {
-    setFormData({ placa: '', marca: '', fecha_matricula: '', tipo_vehiculo: 'automovil', propietario_id: '' });
+    setFormData({ placa: '', marca: '', fecha_matricula: '', tipo_vehiculo: 'automovil', propietario_id: '', imagen: '' });
+    setImagePreview(null);
+    setImageError('');
     onCancel();
   };
 
@@ -147,6 +186,28 @@ const FormVehiculo = ({ onVehiculoCreated, datosEdicion, onCancel }) => {
           style={estiloInput}
           required 
         />
+      </div>
+
+      <div style={estiloGrupo}>
+        <label style={estiloLabel}>Imagen del Vehículo (opcional)</label>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleImageChange}
+          style={{ ...estiloInput, padding: '0.55rem' }}
+        />
+        {imageError && (
+          <p style={{ marginTop: '0.4rem', color: '#b91c1c', fontSize: '0.8rem' }}>{imageError}</p>
+        )}
+        {imagePreview && (
+          <div style={{ marginTop: '0.6rem' }}>
+            <img
+              src={imagePreview}
+              alt="Vista previa del vehiculo"
+              style={{ width: '100%', maxHeight: '180px', objectFit: 'cover', borderRadius: '10px', border: '1px solid #dbe4ee' }}
+            />
+          </div>
+        )}
       </div>
 
       <div style={{ display: 'flex', gap: '12px', marginTop: '1.5rem' }}>

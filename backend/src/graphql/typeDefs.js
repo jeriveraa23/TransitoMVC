@@ -18,6 +18,8 @@ const typeDefs = gql`
     fecha_matricula: String!
     tipo_vehiculo: String!
     propietario_id: Int!
+    imagen: String
+    tiene_imagen: Boolean!
     # Relación virtual para obtener el objeto completo del dueño
     propietario: Propietario
   }
@@ -85,6 +87,7 @@ const typeDefs = gql`
 
     # Vehículos
     buscarVehiculoPlaca(placa: String!): Vehiculo
+    vehiculoPorId(id: ID!): Vehiculo
     listarVehiculos: [Vehiculo]
   }
 
@@ -107,8 +110,10 @@ const typeDefs = gql`
     eliminarPropietario(id: ID!): Propietario
 
     # Vehículos
-    crearVehiculo(placa: String!, marca: String!, fecha_matricula: String!, tipo_vehiculo: String!, propietario_id: Int!): Vehiculo
-    actualizarVehiculo(id: ID!, marca: String!, fecha_matricula: String!, tipo_vehiculo: String!, propietario_id: Int!): Vehiculo
+    crearVehiculo(placa: String!, marca: String!, fecha_matricula: String!, tipo_vehiculo: String!, propietario_id: Int!, imagen: String): Vehiculo
+    actualizarVehiculo(id: ID!, marca: String!, fecha_matricula: String!, tipo_vehiculo: String!, propietario_id: Int!, imagen: String): Vehiculo
+    actualizarImagenVehiculo(id: ID!, imagen: String!): Vehiculo
+    eliminarImagenVehiculo(id: ID!): Vehiculo
     eliminarVehiculo(id: ID!): Vehiculo
 
     # Infracciones

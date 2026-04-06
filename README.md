@@ -99,3 +99,70 @@ Desde esta dirección se puede acceder a la interfaz web y utilizar las diferent
 ## Diagrama de Clases
 ![diagrama de clases](https://github.com/user-attachments/assets/d297cb9e-d7b8-48a2-b9b9-aa9067caeeef)
 
+## Módulo Nuevo: Imágenes de Vehículos
+
+Se agregó una funcionalidad para asociar una imagen a cada vehículo, con tres acciones principales:
+
+- subir imagen al crear o editar un vehículo
+- mostrar la imagen desde el listado de vehículos
+- eliminar la imagen para reemplazarla por otra
+
+### Cómo funciona
+
+El flujo se implementó de extremo a extremo entre frontend, GraphQL, servicio de negocio, repositorio y base de datos:
+
+1. En el formulario de vehículos se selecciona una imagen y se convierte a formato Data URL Base64.
+2. El frontend envía la imagen como campo `imagen` en una mutación GraphQL.
+3. El backend valida formato (`image/*`) y tamaño máximo (2 MB).
+4. El repositorio transforma Base64 a `BYTEA` y guarda también el `mime type`.
+5. Al consultar vehículos, el backend reconstruye la imagen como Data URL para poder renderizarla en la interfaz.
+6. Para eliminar imagen, se ejecuta una mutación que deja los campos de imagen en `NULL`.
+
+### Archivos modificados para habilitar el módulo
+
+#### Backend
+
+- `backend/src/database/schema.sql`
+	- Se agregaron las columnas `imagen BYTEA` y `imagen_mime_type VARCHAR(50)` en la tabla `vehiculos`.
+- `backend/src/graphql/typeDefs.js`
+	- Se extendió `type Vehiculo` con `imagen` y `tiene_imagen`.
+	- Se agregaron `vehiculoPorId`, `actualizarImagenVehiculo` y `eliminarImagenVehiculo`.
+- `backend/src/graphql/resolvers.js`
+	- Se conectaron las nuevas operaciones de imagen al servicio de vehículos.
+- `backend/src/services/vehiculo.service.js`
+	- Se añadieron validaciones de formato y tamaño de imagen.
+	- Se implementaron operaciones de actualizar y eliminar imagen.
+- `backend/src/repositories/vehiculo.repository.js`
+	- Se implementó parseo Data URL Base64 -> `Buffer` para persistencia.
+	- Se implementó mapeo `BYTEA` -> Data URL para respuesta al frontend.
+- `backend/server.js`
+	- Se ajustó el límite del body parser de GraphQL para soportar carga de imágenes (evitar error 413).
+
+#### Frontend
+
+- `frontend/src/services/vehiculoService.js`
+	- Se actualizaron queries/mutations para enviar, consultar y eliminar imagen.
+	- Se agregó consulta por ID para mostrar imagen en modal.
+- `frontend/src/components/vehiculos/formVehiculo.jsx`
+	- Se agregó input de archivo, previsualización y validaciones de tamaño/tipo.
+	- Se mejoró manejo de errores al enviar imagen.
+- `frontend/src/components/vehiculos/tablaVehiculos.jsx`
+	- Se agregó botón “Mostrar imagen”, modal de visualización y botón “Eliminar imagen”.
+- `frontend/src/pages/VehiculosPage.jsx`
+	- Se conectaron notificaciones y recarga de datos después de acciones de imagen.
+
+### Consideraciones técnicas
+
+- Solo se mantiene una imagen por vehículo.
+- Subir una nueva imagen reemplaza la anterior.
+- Si se elimina la imagen, el vehículo queda sin imagen y puede cargarse otra.
+- El límite de imagen es 2 MB por validación de negocio.
+
+### Prueba rápida del módulo
+
+1. Crear un propietario.
+2. Crear un vehículo con imagen (menor a 2 MB).
+3. En el listado, pulsar “Mostrar imagen”.
+4. En el modal, pulsar “Eliminar imagen”.
+5. Editar el vehículo y subir una nueva imagen.
+

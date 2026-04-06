@@ -8,6 +8,7 @@ const { testConnection } = require('./src/config/database');
 
 async function startServer() {
     const app = express();
+    const graphqlBodyLimit = '8mb';
     
     // 1. CORS primero que todo
     app.use(cors());
@@ -24,7 +25,12 @@ async function startServer() {
     await server.start();
     
     // 3. Apollo consume su propio body, así que va aquí
-    server.applyMiddleware({ app });
+    server.applyMiddleware({
+        app,
+        bodyParserConfig: {
+            limit: graphqlBodyLimit,
+        },
+    });
 
     // 4. Si aún necesitas express.json para rutas que NO sean GraphQL:
     app.use(express.json()); 

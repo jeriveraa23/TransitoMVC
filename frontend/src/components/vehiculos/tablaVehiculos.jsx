@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { vehiculoService } from '../../services/vehiculoService';
 
-const TablaVehiculos = ({ listaVehiculos, onVehiculoDeleted, onEdit }) => {
+const TablaVehiculos = ({ listaVehiculos, onVehiculoDeleted, onEdit, onVehiculoUpdated }) => {
+  const [vehiculoConImagen, setVehiculoConImagen] = useState(null);
+  const [cargandoImagen, setCargandoImagen] = useState(false);
   
   const handleEliminar = async (id) => {
     if (window.confirm("¿Desea eliminar este vehículo?")) {
@@ -11,6 +13,41 @@ const TablaVehiculos = ({ listaVehiculos, onVehiculoDeleted, onEdit }) => {
       } catch (error) {
         console.error("Error al eliminar vehículo", error);
       }
+    }
+  };
+
+  const handleMostrarImagen = async (idVehiculo) => {
+    setCargandoImagen(true);
+    try {
+      const vehiculo = await vehiculoService.getById(idVehiculo);
+      if (!vehiculo?.imagen) {
+        onVehiculoUpdated('Este vehiculo no tiene imagen registrada.');
+        return;
+      }
+      setVehiculoConImagen(vehiculo);
+    } catch (error) {
+      onVehiculoUpdated(error?.response?.data?.errors?.[0]?.message || 'No se pudo cargar la imagen del vehiculo.');
+    } finally {
+      setCargandoImagen(false);
+    }
+  };
+
+  const handleEliminarImagen = async () => {
+    if (!vehiculoConImagen?.id_vehiculo) {
+      return;
+    }
+
+    if (!window.confirm('¿Desea eliminar la imagen de este vehiculo?')) {
+      return;
+    }
+
+    try {
+      await vehiculoService.removeImage(vehiculoConImagen.id_vehiculo);
+      setVehiculoConImagen(null);
+      onVehiculoUpdated('Imagen eliminada correctamente.');
+      onVehiculoDeleted();
+    } catch (error) {
+      onVehiculoUpdated(error?.response?.data?.errors?.[0]?.message || 'No se pudo eliminar la imagen.');
     }
   };
 
@@ -47,6 +84,25 @@ const TablaVehiculos = ({ listaVehiculos, onVehiculoDeleted, onEdit }) => {
               </div>
 
               <div style={{ display: 'flex', gap: '0.6rem' }}>
+                <button
+                  className="nav-chip"
+                  onClick={() => handleMostrarImagen(v.id_vehiculo)}
+                  style={{
+                    fontSize: '0.75rem',
+                    cursor: v.tiene_imagen ? 'pointer' : 'not-allowed',
+                    backgroundColor: '#ecfeff',
+                    color: '#155e75',
+                    border: '1px solid #a5f3fc',
+                    padding: '0.5rem 1rem',
+                    borderRadius: '8px',
+                    fontWeight: '600',
+                    opacity: v.tiene_imagen ? 1 : 0.65
+                  }}
+                  disabled={!v.tiene_imagen || cargandoImagen}
+                  title={v.tiene_imagen ? 'Mostrar imagen del vehiculo' : 'Sin imagen registrada'}
+                >
+                  {cargandoImagen ? 'Cargando...' : 'Mostrar imagen'}
+                </button>
                 <button 
                   className="nav-chip" 
                   onClick={() => onEdit(v)} 
@@ -89,6 +145,76 @@ const TablaVehiculos = ({ listaVehiculos, onVehiculoDeleted, onEdit }) => {
         <p style={{ textAlign: 'center', color: '#94a3b8', marginTop: '2rem', fontSize: '0.9rem' }}>
           No hay vehículos registrados.
         </p>
+      )}
+
+      {vehiculoConImagen && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(15, 23, 42, 0.55)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 10000,
+            padding: '1rem'
+          }}
+          onClick={() => setVehiculoConImagen(null)}
+        >
+          <div
+            style={{
+              width: 'min(560px, 95vw)',
+              backgroundColor: '#ffffff',
+              borderRadius: '14px',
+              padding: '1rem',
+              boxShadow: '0 25px 45px -20px rgba(15, 23, 42, 0.55)'
+            }}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <h3 style={{ margin: '0 0 0.8rem 0', color: '#0f172a' }}>
+              Imagen del vehiculo {vehiculoConImagen.placa}
+            </h3>
+
+            <img
+              src={vehiculoConImagen.imagen}
+              alt={`Vehiculo ${vehiculoConImagen.placa}`}
+              style={{ width: '100%', maxHeight: '360px', objectFit: 'contain', borderRadius: '10px', border: '1px solid #dbe4ee' }}
+            />
+
+            <div style={{ display: 'flex', gap: '0.6rem', marginTop: '1rem', justifyContent: 'flex-end' }}>
+              <button
+                type="button"
+                onClick={handleEliminarImagen}
+                style={{
+                  backgroundColor: '#dc2626',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '8px',
+                  padding: '0.55rem 0.9rem',
+                  cursor: 'pointer',
+                  fontWeight: '600'
+                }}
+              >
+                Eliminar imagen
+              </button>
+              <button
+                type="button"
+                onClick={() => setVehiculoConImagen(null)}
+                style={{
+                  backgroundColor: '#e2e8f0',
+                  color: '#0f172a',
+                  border: 'none',
+                  borderRadius: '8px',
+                  padding: '0.55rem 0.9rem',
+                  cursor: 'pointer',
+                  fontWeight: '600'
+                }}
+              >
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
